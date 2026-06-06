@@ -12,8 +12,17 @@ interface MissionState {
   toggleSubtask: (missionId: string, subtaskIndex: number) => void;
   /** 调整任务状态（执行中/计划中/已完成） */
   setMissionStatus: (missionId: string, status: Mission["status"]) => void;
+  /** 新建任务 */
+  addMission: (mission: Omit<Mission, "id">) => void;
+  /** 删除任务 */
+  deleteMission: (missionId: string) => void;
   /** 重置到初始数据 */
   resetMissions: () => void;
+}
+
+/** 生成唯一 ID */
+function nextId() {
+  return `m-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`;
 }
 
 /** 任务管理 Store */
@@ -71,6 +80,17 @@ export const useMissionStore = create<MissionState>()(
           missions: state.missions.map((m) =>
             m.id === missionId ? { ...m, status, progress: status === "planned" ? 0 : m.progress } : m
           ),
+        })),
+
+      addMission: (mission) =>
+        set((state) => ({
+          missions: [...state.missions, { ...mission, id: nextId() }],
+        })),
+
+      deleteMission: (missionId) =>
+        set((state) => ({
+          missions: state.missions.filter((m) => m.id !== missionId),
+          userTouched: state.userTouched.filter((id) => id !== missionId),
         })),
 
       resetMissions: () => set({ missions: initialMissions, userTouched: [] }),

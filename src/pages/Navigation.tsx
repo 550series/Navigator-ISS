@@ -7,7 +7,7 @@ import { Navigation, Compass, Globe, Sun, Waves, Magnet } from "lucide-react";
 
 /** 航线规划与导航页面 */
 export default function NavigationPage() {
-  const { navigation, astronomical } = useNavigationStore();
+  const { navigation, astronomical, correctCourse } = useNavigationStore();
 
   const progressPercent = (navigation.currentDistance / navigation.totalDistance) * 100;
 
@@ -26,17 +26,14 @@ export default function NavigationPage() {
         <Panel title="航线可视化" icon={<Navigation size={14} />} className="col-span-2">
           <div className="relative h-72">
             <svg viewBox="0 0 600 250" className="w-full h-full">
-              {/* 星点背景 */}
-              {Array.from({ length: 30 }, (_, i) => (
-                <circle
-                  key={i}
-                  cx={Math.random() * 600}
-                  cy={Math.random() * 250}
-                  r={Math.random() * 1.5 + 0.3}
-                  fill="white"
-                  opacity={Math.random() * 0.5 + 0.1}
-                />
-              ))}
+              {/* 星点背景（固定种子，避免闪烁） */}
+              {Array.from({ length: 30 }, (_, i) => {
+                const sx = ((i * 137 + 42) % 600);
+                const sy = ((i * 89 + 17) % 250);
+                const sr = (i % 3) * 0.4 + 0.5;
+                const so = (i % 5) * 0.08 + 0.15;
+                return <circle key={i} cx={sx} cy={sy} r={sr} fill="white" opacity={so} />;
+              })}
 
               {/* 航线轨迹 */}
               <path
@@ -138,6 +135,13 @@ export default function NavigationPage() {
                 </div>
               </div>
             </div>
+            <button
+              onClick={correctCourse}
+              disabled={navigation.deviation < 0.001}
+              className="mt-2 w-full text-[10px] py-1.5 rounded border border-cyber-blue/40 text-cyber-blue hover:bg-cyber-blue/10 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+            >
+              执行航线修正
+            </button>
           </div>
         </Panel>
 

@@ -7,6 +7,7 @@ import {
   Radio,
   ClipboardList,
   Users,
+  Settings,
   Atom,
   ChevronLeft,
   ChevronRight,
@@ -22,6 +23,7 @@ const navItems = [
   { path: "/communication", label: "通信系统", icon: Radio },
   { path: "/missions", label: "任务管理", icon: ClipboardList },
   { path: "/crew", label: "船员花名册", icon: Users },
+  { path: "/settings", label: "系统设置", icon: Settings },
 ];
 
 /** 侧边导航栏组件 */

@@ -2,7 +2,7 @@ import { useMissionStore } from "@/stores/missionStore";
 import Panel from "@/components/ui/Panel";
 import ProgressBar from "@/components/ui/ProgressBar";
 import { formatPercent, getPriorityColor, getStatusColor, getStatusBgColor } from "@/utils/formatters";
-import { ClipboardList, CheckCircle, Clock, AlertTriangle, Play, RotateCcw } from "lucide-react";
+import { ClipboardList, CheckCircle, Clock, AlertTriangle, Play, RotateCcw, Plus, Trash2 } from "lucide-react";
 import { useState } from "react";
 import type { Mission } from "@/data/types";
 
@@ -31,9 +31,15 @@ const priorityLabels: Record<Mission["priority"], string> = {
 
 /** 任务管理页面 */
 export default function Missions() {
-  const { missions, toggleSubtask, setMissionStatus, resetMissions } = useMissionStore();
+  const { missions, toggleSubtask, setMissionStatus, resetMissions, addMission, deleteMission } = useMissionStore();
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
   const [selectedMission, setSelectedMission] = useState<string | null>(null);
+  const [showAddForm, setShowAddForm] = useState(false);
+  const [formTitle, setFormTitle] = useState("");
+  const [formDesc, setFormDesc] = useState("");
+  const [formPriority, setFormPriority] = useState<Mission["priority"]>("medium");
+  const [formAssignee, setFormAssignee] = useState("");
+  const [formDeadline, setFormDeadline] = useState("");
 
   const filteredMissions =
     statusFilter === "all"
@@ -89,14 +95,97 @@ export default function Missions() {
               </button>
             ))}
             <button
+              onClick={() => setShowAddForm(true)}
+              className="ml-auto flex items-center gap-1 px-2 py-1.5 text-[10px] text-cyber-blue hover:text-cyber-blue/80 border border-cyber-blue/30 rounded"
+            >
+              <Plus size={10} /> 新建任务
+            </button>
+            <button
               onClick={() => {
                 if (confirm("确定重置所有任务到初始状态？")) resetMissions();
               }}
-              className="ml-auto flex items-center gap-1 px-2 py-1.5 text-[10px] text-gray-500 hover:text-cyber-amber border border-gray-800 rounded"
+              className="flex items-center gap-1 px-2 py-1.5 text-[10px] text-gray-500 hover:text-cyber-amber border border-gray-800 rounded"
             >
               <RotateCcw size={10} /> 重置
             </button>
           </div>
+
+          {/* 新建任务表单 */}
+          {showAddForm && (
+            <div className="mb-4 p-3 rounded border border-cyber-blue/20 bg-space-900/80 space-y-2">
+              <div className="text-xs text-cyber-blue font-rajdhani font-bold mb-1">新建任务</div>
+              <input
+                type="text"
+                placeholder="标题"
+                value={formTitle}
+                onChange={(e) => setFormTitle(e.target.value)}
+                className="w-full px-2 py-1 text-xs bg-space-900 border border-gray-700 rounded text-gray-200 placeholder-gray-600 focus:border-cyber-blue/50 focus:outline-none"
+              />
+              <input
+                type="text"
+                placeholder="描述"
+                value={formDesc}
+                onChange={(e) => setFormDesc(e.target.value)}
+                className="w-full px-2 py-1 text-xs bg-space-900 border border-gray-700 rounded text-gray-200 placeholder-gray-600 focus:border-cyber-blue/50 focus:outline-none"
+              />
+              <select
+                value={formPriority}
+                onChange={(e) => setFormPriority(e.target.value as Mission["priority"])}
+                className="w-full px-2 py-1 text-xs bg-space-900 border border-gray-700 rounded text-gray-200 focus:border-cyber-blue/50 focus:outline-none"
+              >
+                <option value="critical">紧急</option>
+                <option value="high">高</option>
+                <option value="medium">中</option>
+                <option value="low">低</option>
+              </select>
+              <input
+                type="text"
+                placeholder="负责人"
+                value={formAssignee}
+                onChange={(e) => setFormAssignee(e.target.value)}
+                className="w-full px-2 py-1 text-xs bg-space-900 border border-gray-700 rounded text-gray-200 placeholder-gray-600 focus:border-cyber-blue/50 focus:outline-none"
+              />
+              <input
+                type="text"
+                placeholder="截止日期"
+                value={formDeadline}
+                onChange={(e) => setFormDeadline(e.target.value)}
+                className="w-full px-2 py-1 text-xs bg-space-900 border border-gray-700 rounded text-gray-200 placeholder-gray-600 focus:border-cyber-blue/50 focus:outline-none"
+              />
+              <div className="flex gap-2 pt-1">
+                <button
+                  onClick={() => {
+                    if (!formTitle.trim()) return;
+                    addMission({
+                      title: formTitle.trim(),
+                      description: formDesc.trim(),
+                      priority: formPriority,
+                      status: "planned",
+                      progress: 0,
+                      assignee: formAssignee.trim(),
+                      deadline: formDeadline.trim(),
+                      subtasks: [],
+                    });
+                    setFormTitle("");
+                    setFormDesc("");
+                    setFormPriority("medium");
+                    setFormAssignee("");
+                    setFormDeadline("");
+                    setShowAddForm(false);
+                  }}
+                  className="px-3 py-1 text-[10px] border border-cyber-blue/40 text-cyber-blue rounded hover:bg-cyber-blue/10"
+                >
+                  确认
+                </button>
+                <button
+                  onClick={() => setShowAddForm(false)}
+                  className="px-3 py-1 text-[10px] border border-gray-700 text-gray-400 rounded hover:border-gray-500"
+                >
+                  取消
+                </button>
+              </div>
+            </div>
+          )}
 
           <div className="space-y-2 max-h-96 overflow-y-auto">
             {filteredMissions.map((mission) => (
@@ -197,6 +286,17 @@ export default function Missions() {
                     标记完成
                   </button>
                 )}
+                <button
+                  onClick={() => {
+                    if (confirm("确定删除此任务？此操作不可撤销。")) {
+                      deleteMission(selectedMissionData.id);
+                      setSelectedMission(null);
+                    }
+                  }}
+                  className="ml-auto flex items-center gap-1 px-2 py-1 text-[10px] border border-red-800/40 text-red-400 rounded hover:bg-red-900/20"
+                >
+                  <Trash2 size={10} /> 删除
+                </button>
               </div>
 
               <div>

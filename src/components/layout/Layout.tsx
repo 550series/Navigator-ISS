@@ -5,7 +5,7 @@ import { useSimulation } from "@/hooks/useSimulation";
 
 /** 主布局组件 */
 export default function Layout() {
-  useSimulation(3000);
+  useSimulation();
 
   return (
     <div className="h-screen w-screen flex overflow-hidden scanline-overlay">

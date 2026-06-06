@@ -13,11 +13,15 @@ interface StationState {
   alerts: Alert[];
   /** 推进系统目标推力（0-1），用户可手动调节 */
   thrustTarget: number;
+  /** 仿真 tick 计数（用于趋势图采样） */
+  tickCount: number;
   updateSimulation: () => void;
   acknowledgeAlert: (id: string) => void;
   setThrustTarget: (target: number) => void;
   /** 注入告警（由事件触发） */
   pushAlert: (alert: Alert) => void;
+  /** 重置到初始数据 */
+  resetAll: () => void;
 }
 
 /** 空间站状态 Store */
@@ -30,15 +34,30 @@ export const useStationStore = create<StationState>()(
       propulsion: initialPropulsion,
       alerts: initialAlerts,
       thrustTarget: 0.65,
+      tickCount: 0,
 
       updateSimulation: () => {
         const crewSize = useResourceStore.getState().personnel.length;
         set((state) => {
+          const newTick = state.tickCount + 1;
+
           // 能源：产出与消耗解耦，储能根据差值真实变化
           const output = clamp(addFluctuation(state.energy.reactorOutput, 15), 600, 1200);
           const consumption = clamp(addFluctuation(state.energy.consumption, 10), 400, 900);
           const storageDelta = (output - consumption) * 0.0002;
           const storage = clamp(state.energy.storageLevel + storageDelta + (Math.random() - 0.5) * 0.1, 0, 100);
+
+          // 能源趋势实时更新：每 20 tick 采样一次，保留最近 24 个点
+          const trend = newTick % 20 === 0
+            ? [
+                ...state.energy.trend.slice(-23),
+                {
+                  time: `${String(Math.floor(newTick / 20) % 24).padStart(2, "0")}:00`,
+                  output: Math.round(output),
+                  consumption: Math.round(consumption),
+                },
+              ]
+            : state.energy.trend;
 
           // 生命维持：O₂ 随人数衰减，CO₂ 上升，空气质量联动
           const oxygen = clamp(addFluctuation(state.lifeSupport.oxygenLevel, 0.05) - 0.008 * crewSize, 18, 23);
@@ -57,19 +76,27 @@ export const useStationStore = create<StationState>()(
             state.propulsion.mainThrustMax
           );
 
+          // 舱室状态自动演变：根据指标自动判定 status
+          const cabins = state.cabins.map((cabin) => {
+            const temperature = clamp(addFluctuation(cabin.temperature, 0.3), 15, 45);
+            const pressure = clamp(addFluctuation(cabin.pressure, 0.2), 95, 110);
+            const radiation = clamp(addFluctuation(cabin.radiation, 0.02), 0, 5);
+            const integrity = clamp(addFluctuation(cabin.integrity, 0.05), 80, 100);
+            const status: CabinStatus["status"] =
+              integrity < 85 || temperature > 40 || radiation > 3 ? "critical" :
+              integrity < 92 || temperature > 35 || radiation > 2 ? "warning" : "normal";
+            return { ...cabin, temperature, pressure, radiation, integrity, status };
+          });
+
           return {
-            cabins: state.cabins.map((cabin) => ({
-              ...cabin,
-              temperature: clamp(addFluctuation(cabin.temperature, 0.3), 15, 45),
-              pressure: clamp(addFluctuation(cabin.pressure, 0.2), 95, 110),
-              radiation: clamp(addFluctuation(cabin.radiation, 0.02), 0, 5),
-              integrity: clamp(addFluctuation(cabin.integrity, 0.05), 80, 100),
-            })),
+            cabins,
+            tickCount: newTick,
             energy: {
               ...state.energy,
               reactorOutput: output,
               storageLevel: storage,
               consumption,
+              trend,
             },
             lifeSupport: {
               ...state.lifeSupport,
@@ -99,11 +126,20 @@ export const useStationStore = create<StationState>()(
 
       pushAlert: (alert) =>
         set((state) => ({ alerts: [alert, ...state.alerts].slice(0, 50) })),
+
+      resetAll: () => set({
+        cabins: initialCabins,
+        energy: initialEnergy,
+        lifeSupport: initialLifeSupport,
+        propulsion: initialPropulsion,
+        alerts: initialAlerts,
+        thrustTarget: 0.65,
+        tickCount: 0,
+      }),
     }),
     {
       name: "navigator-iss-station",
       storage: createJSONStorage(() => localStorage),
-      // 只持久化用户可控状态，仿真中间值不存
       partialize: (state) => ({ alerts: state.alerts, thrustTarget: state.thrustTarget }),
     }
   )

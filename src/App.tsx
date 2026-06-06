@@ -7,6 +7,7 @@ import NavigationPage from "@/pages/Navigation";
 import Communication from "@/pages/Communication";
 import Missions from "@/pages/Missions";
 import Crew from "@/pages/Crew";
+import SettingsPage from "@/pages/Settings";
 
 export default function App() {
   return (
@@ -20,6 +21,7 @@ export default function App() {
           <Route path="/communication" element={<Communication />} />
           <Route path="/missions" element={<Missions />} />
           <Route path="/crew" element={<Crew />} />
+          <Route path="/settings" element={<SettingsPage />} />
         </Route>
       </Routes>
     </Router>

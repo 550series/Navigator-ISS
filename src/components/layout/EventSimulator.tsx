@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useEventStore } from "@/stores/eventStore";
-import { EVENT_LIST, EVENTS } from "@/data/events";
-import { Zap, AlertTriangle, Radio, ShieldAlert, Atom, Clock, X } from "lucide-react";
+import { EVENT_LIST } from "@/data/events";
+import { Zap, AlertTriangle, Radio, ShieldAlert, Atom, Clock, X, Package, Droplets, Orbit, Heart, Wrench } from "lucide-react";
 import type { EventType } from "@/data/events";
 
 const eventIcons: Record<EventType, typeof Zap> = {
@@ -10,6 +10,11 @@ const eventIcons: Record<EventType, typeof Zap> = {
   comm_jam: Radio,
   drill: ShieldAlert,
   reactor_overload: Atom,
+  supply_arrival: Package,
+  oxygen_leak: Droplets,
+  gravity_anomaly: Orbit,
+  crew_injury: Heart,
+  system_malfunction: Wrench,
 };
 
 const severityColors: Record<string, string> = {
@@ -29,12 +34,14 @@ export default function EventSimulator({ onClose }: { onClose: () => void }) {
   const trigger = useEventStore((s) => s.trigger);
   const lastTriggeredAt = useEventStore((s) => s.lastTriggeredAt);
   const history = useEventStore((s) => s.history);
+  const autoTriggerEnabled = useEventStore((s) => s.autoTriggerEnabled);
+  const toggleAutoTrigger = useEventStore((s) => s.toggleAutoTrigger);
   const [feedback, setFeedback] = useState<string | null>(null);
 
-  const handleTrigger = (type: EventType) => {
+  const handleTrigger = (type: EventType, name: string) => {
     const ok = trigger(type);
     if (ok) {
-      setFeedback(`✓ 事件已触发：${EVENTS[type].name}`);
+      setFeedback(`✓ 事件已触发：${name}`);
     } else {
       setFeedback(`✗ 冷却中，请稍后再试`);
     }
@@ -42,7 +49,7 @@ export default function EventSimulator({ onClose }: { onClose: () => void }) {
   };
 
   return (
-    <div className="fixed left-52 top-0 h-full w-80 bg-space-900/98 backdrop-blur-md border-r border-cyber-blue/30 shadow-2xl shadow-black z-50 flex flex-col">
+    <div className="fixed left-16 top-0 h-full w-80 bg-space-900/98 backdrop-blur-md border-r border-cyber-blue/30 shadow-2xl shadow-black z-50 flex flex-col">
       {/* 头部 */}
       <div className="h-12 border-b border-cyber-blue/20 flex items-center justify-between px-4 flex-shrink-0">
         <div className="flex items-center gap-2">
@@ -51,6 +58,21 @@ export default function EventSimulator({ onClose }: { onClose: () => void }) {
         </div>
         <button onClick={onClose} className="text-gray-500 hover:text-white">
           <X size={14} />
+        </button>
+      </div>
+
+      {/* 自动触发开关 */}
+      <div className="px-4 py-2 border-b border-cyber-blue/10 flex items-center justify-between flex-shrink-0">
+        <span className="text-[10px] text-gray-400 font-rajdhani">自动事件</span>
+        <button
+          onClick={toggleAutoTrigger}
+          className={`text-[10px] px-2 py-0.5 rounded border font-rajdhani transition-colors ${
+            autoTriggerEnabled
+              ? "border-cyber-green/40 text-cyber-green bg-cyber-green/5"
+              : "border-gray-600 text-gray-500 bg-gray-800/30"
+          }`}
+        >
+          {autoTriggerEnabled ? "开" : "关"}
         </button>
       </div>
 
@@ -79,7 +101,7 @@ export default function EventSimulator({ onClose }: { onClose: () => void }) {
                 </span>
               </div>
               <button
-                onClick={() => handleTrigger(ev.type)}
+                onClick={() => handleTrigger(ev.type, ev.name)}
                 disabled={cooling}
                 className={`w-full mt-1.5 px-2 py-1 text-[10px] font-rajdhani rounded border transition-colors ${
                   cooling

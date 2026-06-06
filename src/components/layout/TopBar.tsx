@@ -1,11 +1,18 @@
 import { useStationStore } from "@/stores/stationStore";
-import { Bell, Wifi, Clock } from "lucide-react";
+import { useSimulationStore } from "@/stores/simulationStore";
+import { Bell, Wifi, Clock, Pause, Play, Gauge } from "lucide-react";
 import { useState, useEffect } from "react";
+import type { SimulationSpeed } from "@/stores/simulationStore";
+
+const speedLabels: Record<SimulationSpeed, string> = { 1: "1x", 2: "2x", 5: "5x" };
+const speedOptions: SimulationSpeed[] = [1, 2, 5];
 
 /** 顶部状态栏组件 */
 export default function TopBar() {
   const alerts = useStationStore((s) => s.alerts);
   const acknowledgeAlert = useStationStore((s) => s.acknowledgeAlert);
+  const { running, speed, toggle, setSpeed, tickCount, elapsedDays } = useSimulationStore();
+
   const [currentTime, setCurrentTime] = useState("");
   const [showAlerts, setShowAlerts] = useState(false);
 
@@ -34,6 +41,38 @@ export default function TopBar() {
 
       {/* 右侧状态 */}
       <div className="flex items-center gap-4">
+        {/* 仿真控制 */}
+        <div className="flex items-center gap-2 px-2 py-1 rounded border border-cyber-blue/20 bg-space-900/50">
+          <button
+            onClick={toggle}
+            className={`p-1 rounded transition-colors ${
+              running ? "text-cyber-green hover:text-cyber-green/80" : "text-cyber-amber hover:text-cyber-amber/80"
+            }`}
+            title={running ? "暂停仿真" : "恢复仿真"}
+          >
+            {running ? <Pause size={14} /> : <Play size={14} />}
+          </button>
+          <div className="flex items-center gap-1">
+            <Gauge size={12} className="text-gray-500" />
+            {speedOptions.map((s) => (
+              <button
+                key={s}
+                onClick={() => setSpeed(s)}
+                className={`text-[10px] px-1.5 py-0.5 rounded transition-colors font-rajdhani font-bold ${
+                  speed === s
+                    ? "bg-cyber-blue/20 text-cyber-blue"
+                    : "text-gray-500 hover:text-gray-300"
+                }`}
+              >
+                {speedLabels[s]}
+              </button>
+            ))}
+          </div>
+          <span className="text-[10px] text-gray-500 font-rajdhani border-l border-gray-700 pl-2">
+            D+{Math.floor(elapsedDays)} | T{tickCount}
+          </span>
+        </div>
+
         {/* 通信状态 */}
         <div className="flex items-center gap-1.5 text-xs">
           <Wifi size={14} className="text-cyber-green" />
