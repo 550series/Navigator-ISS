@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useEventStore } from "@/stores/eventStore";
-import { EVENT_LIST } from "@/data/events";
+import { EVENT_LIST, EVENTS } from "@/data/events";
 import { Zap, AlertTriangle, Radio, ShieldAlert, Atom, Clock, X } from "lucide-react";
 import type { EventType } from "@/data/events";
 
@@ -24,10 +24,6 @@ const severityLabels: Record<string, string> = {
   critical: "紧急",
 };
 
-const EVENTS_BY_TYPE: Record<EventType, (typeof EVENT_LIST)[number]> = Object.fromEntries(
-  EVENT_LIST.map((e) => [e.type, e])
-) as Record<EventType, (typeof EVENT_LIST)[number]>;
-
 /** 事件模拟器弹层组件 */
 export default function EventSimulator({ onClose }: { onClose: () => void }) {
   const trigger = useEventStore((s) => s.trigger);
@@ -38,7 +34,7 @@ export default function EventSimulator({ onClose }: { onClose: () => void }) {
   const handleTrigger = (type: EventType) => {
     const ok = trigger(type);
     if (ok) {
-      setFeedback(`✓ 事件已触发：${EVENTS_BY_TYPE[type].name}`);
+      setFeedback(`✓ 事件已触发：${EVENTS[type].name}`);
     } else {
       setFeedback(`✗ 冷却中，请稍后再试`);
     }

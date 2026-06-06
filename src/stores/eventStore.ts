@@ -42,8 +42,13 @@ function applyEffect(def: EventDef): boolean {
   }
 
   if (effect.cabinDamage && effect.cabinDamage.length > 0) {
-    // 通过 pushAlert 已经记录了，舱室 integrity 衰减交给下个 tick 的随机波动
-    // 这里只打一个 critical 标识以便 UI 渲染
+    useStationStore.setState((s) => ({
+      cabins: s.cabins.map((c) =>
+        effect.cabinDamage!.includes(c.id)
+          ? { ...c, integrity: clamp(c.integrity - 15, 0, 100), status: "critical" as const }
+          : c
+      ),
+    }));
   }
 
   if (effect.reactorOverride !== undefined) {
