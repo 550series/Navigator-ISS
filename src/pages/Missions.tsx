@@ -2,8 +2,9 @@ import { useMissionStore } from "@/stores/missionStore";
 import Panel from "@/components/ui/Panel";
 import ProgressBar from "@/components/ui/ProgressBar";
 import { formatPercent, getPriorityColor, getStatusColor, getStatusBgColor } from "@/utils/formatters";
-import { ClipboardList, CheckCircle, Clock, AlertTriangle } from "lucide-react";
+import { ClipboardList, CheckCircle, Clock, AlertTriangle, Play, RotateCcw } from "lucide-react";
 import { useState } from "react";
+import type { Mission } from "@/data/types";
 
 type StatusFilter = "all" | "in_progress" | "planned" | "completed";
 
@@ -14,9 +15,23 @@ const statusFilters: { value: StatusFilter; label: string; icon: typeof Clock }[
   { value: "completed", label: "已完成", icon: CheckCircle },
 ];
 
+const statusLabels: Record<Mission["status"], string> = {
+  in_progress: "执行中",
+  planned: "计划中",
+  completed: "已完成",
+  aborted: "已中止",
+};
+
+const priorityLabels: Record<Mission["priority"], string> = {
+  critical: "紧急",
+  high: "高",
+  medium: "中",
+  low: "低",
+};
+
 /** 任务管理页面 */
 export default function Missions() {
-  const { missions } = useMissionStore();
+  const { missions, toggleSubtask, setMissionStatus, resetMissions } = useMissionStore();
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
   const [selectedMission, setSelectedMission] = useState<string | null>(null);
 
@@ -57,8 +72,8 @@ export default function Missions() {
       <div className="grid grid-cols-3 gap-4">
         {/* 任务列表 */}
         <Panel title="任务列表" icon={<ClipboardList size={14} />} className="col-span-2">
-          {/* 状态筛选 */}
-          <div className="flex gap-2 mb-4">
+          {/* 状态筛选 + 重置 */}
+          <div className="flex gap-2 mb-4 items-center">
             {statusFilters.map(({ value, label, icon: Icon }) => (
               <button
                 key={value}
@@ -73,6 +88,14 @@ export default function Missions() {
                 {label}
               </button>
             ))}
+            <button
+              onClick={() => {
+                if (confirm("确定重置所有任务到初始状态？")) resetMissions();
+              }}
+              className="ml-auto flex items-center gap-1 px-2 py-1.5 text-[10px] text-gray-500 hover:text-cyber-amber border border-gray-800 rounded"
+            >
+              <RotateCcw size={10} /> 重置
+            </button>
           </div>
 
           <div className="space-y-2 max-h-96 overflow-y-auto">
@@ -94,7 +117,7 @@ export default function Missions() {
                     <span className="text-sm text-gray-200 font-rajdhani font-medium">{mission.title}</span>
                   </div>
                   <span className={`px-2 py-0.5 rounded text-[10px] border ${getStatusBgColor(mission.status)}`}>
-                    {mission.status === "in_progress" ? "执行中" : mission.status === "planned" ? "计划中" : mission.status === "completed" ? "已完成" : "已中止"}
+                    {statusLabels[mission.status]}
                   </span>
                 </div>
                 <p className="text-xs text-gray-500 mb-2 line-clamp-1">{mission.description}</p>
@@ -121,13 +144,13 @@ export default function Missions() {
                 <div>
                   <span className="text-gray-500">优先级</span>
                   <div className={`font-rajdhani font-bold mt-0.5 ${getPriorityColor(selectedMissionData.priority)}`}>
-                    {selectedMissionData.priority === "critical" ? "紧急" : selectedMissionData.priority === "high" ? "高" : selectedMissionData.priority === "medium" ? "中" : "低"}
+                    {priorityLabels[selectedMissionData.priority]}
                   </div>
                 </div>
                 <div>
                   <span className="text-gray-500">状态</span>
                   <div className={`font-rajdhani font-bold mt-0.5 ${getStatusColor(selectedMissionData.status)}`}>
-                    {selectedMissionData.status === "in_progress" ? "执行中" : selectedMissionData.status === "planned" ? "计划中" : "已完成"}
+                    {statusLabels[selectedMissionData.status]}
                   </div>
                 </div>
                 <div>
@@ -148,12 +171,44 @@ export default function Missions() {
                 <ProgressBar value={selectedMissionData.progress} max={100} height={8} />
               </div>
 
+              {/* 状态切换按钮 */}
+              <div className="flex gap-1.5">
+                {selectedMissionData.status !== "in_progress" && (
+                  <button
+                    onClick={() => setMissionStatus(selectedMissionData.id, "in_progress")}
+                    className="flex items-center gap-1 px-2 py-1 text-[10px] border border-cyber-blue/40 text-cyber-blue rounded hover:bg-cyber-blue/10"
+                  >
+                    <Play size={10} /> 开始
+                  </button>
+                )}
+                {selectedMissionData.status !== "planned" && (
+                  <button
+                    onClick={() => setMissionStatus(selectedMissionData.id, "planned")}
+                    className="px-2 py-1 text-[10px] border border-gray-700 text-gray-400 rounded hover:border-gray-500"
+                  >
+                    转为计划
+                  </button>
+                )}
+                {selectedMissionData.status !== "completed" && (
+                  <button
+                    onClick={() => setMissionStatus(selectedMissionData.id, "completed")}
+                    className="px-2 py-1 text-[10px] border border-cyber-green/40 text-cyber-green rounded hover:bg-cyber-green/10"
+                  >
+                    标记完成
+                  </button>
+                )}
+              </div>
+
               <div>
-                <span className="text-xs text-gray-500">子任务</span>
+                <span className="text-xs text-gray-500">子任务（点击切换）</span>
                 <div className="space-y-1.5 mt-2">
                   {selectedMissionData.subtasks.map((subtask, i) => (
-                    <div key={i} className="flex items-center gap-2 text-xs">
-                      <div className={`w-4 h-4 rounded border flex items-center justify-center ${
+                    <button
+                      key={i}
+                      onClick={() => toggleSubtask(selectedMissionData.id, i)}
+                      className="w-full flex items-center gap-2 text-xs text-left hover:bg-space-700/30 px-1 py-0.5 rounded transition-colors"
+                    >
+                      <div className={`w-4 h-4 rounded border flex items-center justify-center flex-shrink-0 ${
                         subtask.completed ? "border-cyber-green/50 bg-cyber-green/10" : "border-gray-600"
                       }`}>
                         {subtask.completed && <CheckCircle size={10} className="text-cyber-green" />}
@@ -161,7 +216,7 @@ export default function Missions() {
                       <span className={subtask.completed ? "text-gray-500 line-through" : "text-gray-300"}>
                         {subtask.name}
                       </span>
-                    </div>
+                    </button>
                   ))}
                 </div>
               </div>

@@ -6,10 +6,13 @@ import {
   Navigation,
   Radio,
   ClipboardList,
+  Users,
+  Atom,
   ChevronLeft,
   ChevronRight,
 } from "lucide-react";
 import { useState } from "react";
+import EventSimulator from "./EventSimulator";
 
 const navItems = [
   { path: "/", label: "总览", icon: LayoutDashboard },
@@ -18,11 +21,13 @@ const navItems = [
   { path: "/navigation", label: "航线导航", icon: Navigation },
   { path: "/communication", label: "通信系统", icon: Radio },
   { path: "/missions", label: "任务管理", icon: ClipboardList },
+  { path: "/crew", label: "船员花名册", icon: Users },
 ];
 
 /** 侧边导航栏组件 */
 export default function Sidebar() {
   const [collapsed, setCollapsed] = useState(false);
+  const [showEvents, setShowEvents] = useState(false);
   const location = useLocation();
 
   return (
@@ -65,6 +70,19 @@ export default function Sidebar() {
         })}
       </nav>
 
+      {/* 事件模拟器入口 */}
+      <button
+        onClick={() => setShowEvents(!showEvents)}
+        className={`flex items-center gap-3 h-10 border-t border-cyber-blue/20 transition-colors px-3 ${
+          showEvents
+            ? "bg-cyber-amber/10 text-cyber-amber"
+            : "text-gray-500 hover:text-cyber-amber"
+        }`}
+      >
+        <Atom size={16} className="flex-shrink-0" />
+        {!collapsed && <span className="text-xs font-rajdhani">事件模拟器</span>}
+      </button>
+
       {/* 折叠按钮 */}
       <button
         onClick={() => setCollapsed(!collapsed)}
@@ -72,6 +90,8 @@ export default function Sidebar() {
       >
         {collapsed ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
       </button>
+
+      {showEvents && <EventSimulator onClose={() => setShowEvents(false)} />}
     </aside>
   );
 }

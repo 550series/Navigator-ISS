@@ -6,6 +6,7 @@ import Resources from "@/pages/Resources";
 import NavigationPage from "@/pages/Navigation";
 import Communication from "@/pages/Communication";
 import Missions from "@/pages/Missions";
+import Crew from "@/pages/Crew";
 
 export default function App() {
   return (
@@ -18,6 +19,7 @@ export default function App() {
           <Route path="/navigation" element={<NavigationPage />} />
           <Route path="/communication" element={<Communication />} />
           <Route path="/missions" element={<Missions />} />
+          <Route path="/crew" element={<Crew />} />
         </Route>
       </Routes>
     </Router>

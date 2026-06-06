@@ -3,14 +3,24 @@ import Panel from "@/components/ui/Panel";
 import ProgressBar from "@/components/ui/ProgressBar";
 import StatusCard from "@/components/ui/StatusCard";
 import { formatNumber, getStatusColor, getStatusBgColor } from "@/utils/formatters";
-import { Package, Users, Cpu, AlertTriangle } from "lucide-react";
+import { Package, Users, Cpu, AlertTriangle, TrendingDown } from "lucide-react";
 import { useState } from "react";
+import {
+  ResponsiveContainer,
+  AreaChart,
+  Area,
+  XAxis,
+  YAxis,
+  Tooltip,
+  CartesianGrid,
+  Legend,
+} from "recharts";
 
 const categories = ["全部", "食物", "水", "医疗", "备件", "能源", "气体"];
 
 /** 资源管理页面 */
 export default function Resources() {
-  const { resources, personnel, equipment } = useResourceStore();
+  const { resources, personnel, equipment, history } = useResourceStore();
   const [selectedCategory, setSelectedCategory] = useState("全部");
 
   const filteredResources =
@@ -30,6 +40,52 @@ export default function Resources() {
         <StatusCard title="在站人员" value={personnel.length} unit="人" icon={<Users size={16} />} />
         <StatusCard title="设备运行率" value={formatNumber((operationalEquipment / equipment.length) * 100, 0)} unit="%" icon={<Cpu size={16} />} />
       </div>
+
+      {/* 物资储备趋势（24 个采样点） */}
+      <Panel title="物资消耗趋势" icon={<TrendingDown size={14} />}>
+        {history.length < 2 ? (
+          <div className="h-48 flex items-center justify-center text-xs text-gray-600">
+            采集数据中…（每 1 分钟采样一次）
+          </div>
+        ) : (
+          <div className="h-48">
+            <ResponsiveContainer width="100%" height="100%">
+              <AreaChart data={history} margin={{ top: 5, right: 10, left: 0, bottom: 0 }}>
+                <defs>
+                  <linearGradient id="gradFood" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="#00d4ff" stopOpacity={0.4} />
+                    <stop offset="100%" stopColor="#00d4ff" stopOpacity={0} />
+                  </linearGradient>
+                  <linearGradient id="gradWater" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="#00ff88" stopOpacity={0.4} />
+                    <stop offset="100%" stopColor="#00ff88" stopOpacity={0} />
+                  </linearGradient>
+                  <linearGradient id="gradMed" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="#ff8c00" stopOpacity={0.4} />
+                    <stop offset="100%" stopColor="#ff8c00" stopOpacity={0} />
+                  </linearGradient>
+                  <linearGradient id="gradO2" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="#a855f7" stopOpacity={0.4} />
+                    <stop offset="100%" stopColor="#a855f7" stopOpacity={0} />
+                  </linearGradient>
+                </defs>
+                <CartesianGrid strokeDasharray="3 3" stroke="#1a3355" opacity={0.3} />
+                <XAxis dataKey="tick" tick={{ fontSize: 10, fill: "#4a5568" }} axisLine={{ stroke: "#1a3355" }} />
+                <YAxis tick={{ fontSize: 10, fill: "#4a5568" }} axisLine={{ stroke: "#1a3355" }} />
+                <Tooltip
+                  contentStyle={{ background: "#0a0e17", border: "1px solid rgba(0,212,255,0.3)", borderRadius: 4, fontSize: 11 }}
+                  labelStyle={{ color: "#00d4ff" }}
+                />
+                <Legend wrapperStyle={{ fontSize: 10 }} />
+                <Area type="monotone" dataKey="r1" name="食物" stroke="#00d4ff" fill="url(#gradFood)" strokeWidth={1.5} />
+                <Area type="monotone" dataKey="r3" name="水" stroke="#00ff88" fill="url(#gradWater)" strokeWidth={1.5} />
+                <Area type="monotone" dataKey="r5" name="医疗" stroke="#ff8c00" fill="url(#gradMed)" strokeWidth={1.5} />
+                <Area type="monotone" dataKey="r11" name="氧气" stroke="#a855f7" fill="url(#gradO2)" strokeWidth={1.5} />
+              </AreaChart>
+            </ResponsiveContainer>
+          </div>
+        )}
+      </Panel>
 
       {/* 物资储备 */}
       <Panel title="物资储备" icon={<Package size={14} />}>

@@ -2,19 +2,31 @@ import { useCommStore } from "@/stores/commStore";
 import Panel from "@/components/ui/Panel";
 import StatusCard from "@/components/ui/StatusCard";
 import { formatNumber, getStatusColor, getStatusBgColor } from "@/utils/formatters";
-import { Radio, Wifi, WifiOff, Globe, Satellite, Ship, MessageSquare } from "lucide-react";
+import { Radio, Wifi, WifiOff, Globe, Satellite, Ship, MessageSquare, Send } from "lucide-react";
 import { useState } from "react";
+import type { Communication } from "@/data/types";
 
 /** 通信系统页面 */
 export default function Communication() {
-  const { commLinks, communications } = useCommStore();
+  const { commLinks, communications, sendMessage } = useCommStore();
   const [selectedComm, setSelectedComm] = useState<string | null>(null);
+  const [draftTarget, setDraftTarget] = useState("地球联合政府");
+  const [draftContent, setDraftContent] = useState("");
+  const [draftType, setDraftType] = useState<Communication["type"]>("routine");
+  const [showSend, setShowSend] = useState(false);
 
   const connectedLinks = commLinks.filter((l) => l.status === "connected").length;
   const degradedLinks = commLinks.filter((l) => l.status === "degraded").length;
   const offlineLinks = commLinks.filter((l) => l.status === "offline").length;
 
   const selectedCommunication = communications.find((c) => c.id === selectedComm);
+
+  const handleSend = () => {
+    if (!draftContent.trim()) return;
+    sendMessage({ target: draftTarget, content: draftContent, type: draftType });
+    setDraftContent("");
+    setShowSend(false);
+  };
 
   const getTypeIcon = (type: string) => {
     switch (type) {
@@ -83,7 +95,79 @@ export default function Communication() {
       </Panel>
 
       {/* 通信记录 */}
-      <Panel title="通信记录" icon={<MessageSquare size={14} />}>
+      <Panel
+        title="通信记录"
+        icon={<MessageSquare size={14} />}
+        action={
+          <button
+            onClick={() => setShowSend(!showSend)}
+            className="flex items-center gap-1 px-2 py-1 text-[10px] border border-cyber-blue/40 text-cyber-blue rounded hover:bg-cyber-blue/10"
+          >
+            <Send size={10} /> 发送消息
+          </button>
+        }
+      >
+        {/* 发送消息表单 */}
+        {showSend && (
+          <div className="mb-4 p-3 bg-space-900/60 border border-cyber-blue/20 rounded space-y-2">
+            <div className="grid grid-cols-2 gap-2">
+              <div>
+                <div className="text-[10px] text-gray-500 mb-1">目标</div>
+                <select
+                  value={draftTarget}
+                  onChange={(e) => setDraftTarget(e.target.value)}
+                  className="w-full bg-space-900 border border-gray-700 text-xs text-gray-300 px-2 py-1.5 rounded"
+                >
+                  <option>地球联合政府</option>
+                  <option>NASA控制中心</option>
+                  <option>联邦航天局</option>
+                  <option>深空中继站</option>
+                  <option>行星发动机控制</option>
+                  <option>地下城管理中心</option>
+                </select>
+              </div>
+              <div>
+                <div className="text-[10px] text-gray-500 mb-1">类型</div>
+                <select
+                  value={draftType}
+                  onChange={(e) => setDraftType(e.target.value as Communication["type"])}
+                  className="w-full bg-space-900 border border-gray-700 text-xs text-gray-300 px-2 py-1.5 rounded"
+                >
+                  <option value="routine">常规</option>
+                  <option value="official">官方</option>
+                  <option value="emergency">紧急</option>
+                  <option value="personal">私人</option>
+                </select>
+              </div>
+            </div>
+            <div>
+              <div className="text-[10px] text-gray-500 mb-1">内容</div>
+              <textarea
+                value={draftContent}
+                onChange={(e) => setDraftContent(e.target.value)}
+                placeholder="输入消息内容..."
+                rows={2}
+                className="w-full bg-space-900 border border-gray-700 text-xs text-gray-300 px-2 py-1.5 rounded resize-none focus:border-cyber-blue/50 outline-none"
+              />
+            </div>
+            <div className="flex justify-end gap-2">
+              <button
+                onClick={() => { setShowSend(false); setDraftContent(""); }}
+                className="px-3 py-1 text-[10px] border border-gray-700 text-gray-500 rounded hover:border-gray-500"
+              >
+                取消
+              </button>
+              <button
+                onClick={handleSend}
+                disabled={!draftContent.trim()}
+                className="flex items-center gap-1 px-3 py-1 text-[10px] border border-cyber-blue/50 bg-cyber-blue/10 text-cyber-blue rounded hover:bg-cyber-blue/20 disabled:opacity-40 disabled:cursor-not-allowed"
+              >
+                <Send size={10} /> 发送
+              </button>
+            </div>
+          </div>
+        )}
+
         <div className="grid grid-cols-3 gap-4">
           {/* 记录列表 */}
           <div className="col-span-2 space-y-2 max-h-64 overflow-y-auto">

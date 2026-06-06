@@ -6,10 +6,12 @@ interface PanelProps {
   children: ReactNode;
   className?: string;
   alert?: boolean;
+  /** 头部右侧操作区（如按钮） */
+  action?: ReactNode;
 }
 
 /** 面板组件 - 用于各模块内容区域 */
-export default function Panel({ title, icon, children, className = "", alert = false }: PanelProps) {
+export default function Panel({ title, icon, children, className = "", alert = false, action }: PanelProps) {
   return (
     <div
       className={`bg-space-800/40 backdrop-blur-sm rounded border border-cyber-blue/15 overflow-hidden ${
@@ -19,6 +21,7 @@ export default function Panel({ title, icon, children, className = "", alert = f
       <div className="flex items-center gap-2 px-4 py-2.5 border-b border-cyber-blue/10 bg-space-800/60">
         {icon && <span className="text-cyber-blue">{icon}</span>}
         <h3 className="font-orbitron text-xs text-cyber-blue tracking-wider uppercase">{title}</h3>
+        {action && <div className="ml-auto">{action}</div>}
       </div>
       <div className="p-4">{children}</div>
     </div>

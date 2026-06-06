@@ -9,17 +9,34 @@ import ProgressBar from "@/components/ui/ProgressBar";
 import { formatNumber, formatPercent, getAlertLevelColor } from "@/utils/formatters";
 import { Zap, Heart, Rocket, Radio, AlertTriangle, Navigation, ClipboardList } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useState } from "react";
+import type { CabinStatus } from "@/data/types";
+
+/** 空间站 SVG 中舱段 ID 与 CabinStatus.id 的映射 */
+const SVG_CABIN_MAP: Record<string, { id: string; label: string }> = {
+  CMD: { id: "c1", label: "CMD" },
+  LIVE_A: { id: "c2", label: "LIVE-A" },
+  LIVE_B: { id: "c3", label: "LIVE-B" },
+  ENGINE: { id: "c4", label: "ENGINE" },
+  CARGO_A: { id: "c5", label: "CARGO-A" },
+  CARGO_B: { id: "c6", label: "CARGO-B" },
+  MED: { id: "c7", label: "MED" },
+  LAB: { id: "c8", label: "LAB" },
+};
 
 /** 总览仪表盘页面 */
 export default function Dashboard() {
-  const { energy, lifeSupport, propulsion, alerts } = useStationStore();
+  const { energy, lifeSupport, propulsion, alerts, cabins } = useStationStore();
   const navigation = useNavigationStore((s) => s.navigation);
   const commLinks = useCommStore((s) => s.commLinks);
   const missions = useMissionStore((s) => s.missions);
+  const [selectedCabin, setSelectedCabin] = useState<CabinStatus | null>(null);
 
   const activeMissions = missions.filter((m) => m.status === "in_progress").length;
   const connectedLinks = commLinks.filter((l) => l.status === "connected").length;
   const totalLinks = commLinks.length;
+
+  const getCabin = (key: keyof typeof SVG_CABIN_MAP) => cabins.find((c) => c.id === SVG_CABIN_MAP[key].id);
 
   return (
     <div className="space-y-4">
@@ -77,25 +94,29 @@ export default function Dashboard() {
       {/* 中间区域 */}
       <div className="grid grid-cols-3 gap-4">
         {/* 空间站示意图 */}
-        <Panel title="空间站概览" className="col-span-2">
+        <Panel title="空间站概览（点击舱段查看详情）" className="col-span-2">
           <div className="relative h-64 flex items-center justify-center">
             {/* 空间站SVG示意图 */}
             <svg viewBox="0 0 400 200" className="w-full max-w-lg animate-float">
               {/* 主体环 */}
               <ellipse cx="200" cy="100" rx="120" ry="40" fill="none" stroke="#00d4ff" strokeWidth="1.5" opacity="0.6" />
               <ellipse cx="200" cy="100" rx="120" ry="40" fill="none" stroke="#00d4ff" strokeWidth="0.5" opacity="0.2" strokeDasharray="4 4" />
-              {/* 中心舱 */}
-              <rect x="180" y="80" width="40" height="40" rx="4" fill="#0c1e3a" stroke="#00d4ff" strokeWidth="1" opacity="0.8" />
-              <text x="200" y="104" textAnchor="middle" fill="#00d4ff" fontSize="8" fontFamily="Orbitron">CMD</text>
-              {/* 左侧舱段 */}
-              <rect x="60" y="88" width="50" height="24" rx="3" fill="#0c1e3a" stroke="#00d4ff" strokeWidth="0.8" opacity="0.7" />
-              <text x="85" y="104" textAnchor="middle" fill="#00d4ff" fontSize="6" fontFamily="Rajdhani">LIVE-A</text>
-              {/* 右侧舱段 */}
-              <rect x="290" y="88" width="50" height="24" rx="3" fill="#0c1e3a" stroke="#00d4ff" strokeWidth="0.8" opacity="0.7" />
-              <text x="315" y="104" textAnchor="middle" fill="#00d4ff" fontSize="6" fontFamily="Rajdhani">LIVE-B</text>
+
+              {/* 中心舱（指挥舱） */}
+              <CabinRect x={180} y={80} w={40} h={40} cabin={getCabin("CMD")} onClick={setSelectedCabin} label={SVG_CABIN_MAP.CMD.label} />
+              {/* 左侧生活舱 */}
+              <CabinRect x={60} y={88} w={50} h={24} cabin={getCabin("LIVE_A")} onClick={setSelectedCabin} label={SVG_CABIN_MAP.LIVE_A.label} />
+              {/* 右侧生活舱 */}
+              <CabinRect x={290} y={88} w={50} h={24} cabin={getCabin("LIVE_B")} onClick={setSelectedCabin} label={SVG_CABIN_MAP.LIVE_B.label} />
               {/* 引擎舱 */}
-              <rect x="155" y="140" width="90" height="20" rx="3" fill="#0c1e3a" stroke="#ff8c00" strokeWidth="0.8" opacity="0.7" />
-              <text x="200" y="154" textAnchor="middle" fill="#ff8c00" fontSize="6" fontFamily="Rajdhani">ENGINE</text>
+              <CabinRect x={155} y={140} w={90} h={20} cabin={getCabin("ENGINE")} onClick={setSelectedCabin} label={SVG_CABIN_MAP.ENGINE.label} accent="#ff8c00" />
+              {/* 货舱 A/B */}
+              <CabinRect x={80} y={130} w={40} h={16} cabin={getCabin("CARGO_A")} onClick={setSelectedCabin} label={SVG_CABIN_MAP.CARGO_A.label} small />
+              <CabinRect x={280} y={130} w={40} h={16} cabin={getCabin("CARGO_B")} onClick={setSelectedCabin} label={SVG_CABIN_MAP.CARGO_B.label} small />
+              {/* 医疗舱 / 实验室（顶部） */}
+              <CabinRect x={120} y={40} w={30} h={14} cabin={getCabin("MED")} onClick={setSelectedCabin} label={SVG_CABIN_MAP.MED.label} small />
+              <CabinRect x={250} y={40} w={30} h={14} cabin={getCabin("LAB")} onClick={setSelectedCabin} label={SVG_CABIN_MAP.LAB.label} small />
+
               {/* 推进器 */}
               <line x1="170" y1="160" x2="170" y2="180" stroke="#ff8c00" strokeWidth="1" opacity="0.5" />
               <line x1="200" y1="160" x2="200" y2="185" stroke="#ff8c00" strokeWidth="1.5" opacity="0.7" />
@@ -109,16 +130,44 @@ export default function Dashboard() {
               <line x1="110" y1="100" x2="180" y2="100" stroke="#00d4ff" strokeWidth="0.5" opacity="0.4" strokeDasharray="3 3" />
               <line x1="220" y1="100" x2="290" y2="100" stroke="#00d4ff" strokeWidth="0.5" opacity="0.4" strokeDasharray="3 3" />
               <line x1="200" y1="120" x2="200" y2="140" stroke="#00d4ff" strokeWidth="0.5" opacity="0.4" strokeDasharray="3 3" />
-              {/* 货舱 */}
-              <rect x="80" y="130" width="40" height="16" rx="2" fill="#0c1e3a" stroke="#00d4ff" strokeWidth="0.5" opacity="0.5" />
-              <text x="100" y="142" textAnchor="middle" fill="#00d4ff" fontSize="5" fontFamily="Rajdhani">CARGO-A</text>
-              <rect x="280" y="130" width="40" height="16" rx="2" fill="#0c1e3a" stroke="#00d4ff" strokeWidth="0.5" opacity="0.5" />
-              <text x="300" y="142" textAnchor="middle" fill="#00d4ff" fontSize="5" fontFamily="Rajdhani">CARGO-B</text>
+              <line x1="200" y1="80" x2="200" y2="54" stroke="#00d4ff" strokeWidth="0.5" opacity="0.4" strokeDasharray="3 3" />
+              <line x1="135" y1="50" x2="180" y2="82" stroke="#00d4ff" strokeWidth="0.5" opacity="0.3" strokeDasharray="3 3" />
+              <line x1="265" y1="50" x2="220" y2="82" stroke="#00d4ff" strokeWidth="0.5" opacity="0.3" strokeDasharray="3 3" />
             </svg>
             {/* 扫描线效果 */}
             <div className="absolute inset-0 pointer-events-none opacity-20">
               <div className="w-full h-0.5 bg-cyber-blue/50 animate-scan-line" />
             </div>
+
+            {/* 舱段详情卡 */}
+            {selectedCabin && (
+              <div className="absolute top-2 right-2 w-56 bg-space-900/95 border border-cyber-blue/40 rounded shadow-xl p-3 text-xs backdrop-blur-sm z-10">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="font-orbitron text-cyber-blue">{selectedCabin.name}</span>
+                  <button
+                    onClick={() => setSelectedCabin(null)}
+                    className="text-gray-500 hover:text-white text-[10px]"
+                  >
+                    ✕
+                  </button>
+                </div>
+                <div className="space-y-1.5">
+                  <Row label="温度" value={`${selectedCabin.temperature.toFixed(1)}°C`} />
+                  <Row label="压力" value={`${selectedCabin.pressure.toFixed(1)} kPa`} />
+                  <Row label="辐射" value={`${selectedCabin.radiation.toFixed(2)} mSv/h`} />
+                  <Row label="完整性" value={`${selectedCabin.integrity.toFixed(1)}%`} />
+                  <div className="pt-1 border-t border-gray-800/50">
+                    <span className="text-gray-500">状态：</span>
+                    <span className={
+                      selectedCabin.status === "normal" ? "text-cyber-green ml-1" :
+                      selectedCabin.status === "warning" ? "text-cyber-amber ml-1" : "text-cyber-red ml-1"
+                    }>
+                      {selectedCabin.status === "normal" ? "正常" : selectedCabin.status === "warning" ? "警告" : "严重"}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         </Panel>
 
@@ -210,6 +259,60 @@ export default function Dashboard() {
           </div>
         </Panel>
       </div>
+    </div>
+  );
+}
+
+/** SVG 舱段可点击矩形组件 */
+function CabinRect({
+  x, y, w, h, cabin, onClick, label, accent = "#00d4ff", small = false,
+}: {
+  x: number; y: number; w: number; h: number;
+  cabin: CabinStatus | undefined;
+  onClick: (c: CabinStatus) => void;
+  label: string;
+  accent?: string;
+  small?: boolean;
+}) {
+  const statusColor =
+    cabin?.status === "critical" ? "#ff3b3b" :
+    cabin?.status === "warning" ? "#ff8c00" :
+    accent;
+  return (
+    <g
+      onClick={() => cabin && onClick(cabin)}
+      style={{ cursor: "pointer" }}
+      className="transition-opacity hover:opacity-100"
+      opacity={0.7}
+    >
+      <rect
+        x={x} y={y} width={w} height={h}
+        rx={small ? 2 : 3}
+        fill="#0c1e3a"
+        stroke={statusColor}
+        strokeWidth="0.8"
+        opacity="1"
+      />
+      <text
+        x={x + w / 2}
+        y={y + h / 2 + (small ? 2 : 3)}
+        textAnchor="middle"
+        fill={statusColor}
+        fontSize={small ? 5 : 6}
+        fontFamily="Rajdhani"
+      >
+        {label}
+      </text>
+    </g>
+  );
+}
+
+/** 详情行 */
+function Row({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="flex justify-between">
+      <span className="text-gray-500">{label}</span>
+      <span className="text-white font-rajdhani">{value}</span>
     </div>
   );
 }

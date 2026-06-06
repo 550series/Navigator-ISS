@@ -1,0 +1,19 @@
+{
+  "name": "领航员空间站管理系统 | Navigator ISS",
+  "short_name": "Navigator ISS",
+  "description": "《流浪地球》领航员空间站模拟管理界面，提供空间站日常运营核心功能的可视化交互体验。",
+  "theme_color": "#0a0e17",
+  "background_color": "#0a0e17",
+  "display": "standalone",
+  "orientation": "landscape",
+  "start_url": "/",
+  "scope": "/",
+  "icons": [
+    {
+      "src": "pwa-512x512.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
