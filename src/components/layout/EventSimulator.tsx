@@ -24,6 +24,10 @@ const severityLabels: Record<string, string> = {
   critical: "紧急",
 };
 
+const EVENTS_BY_TYPE: Record<EventType, (typeof EVENT_LIST)[number]> = Object.fromEntries(
+  EVENT_LIST.map((e) => [e.type, e])
+) as Record<EventType, (typeof EVENT_LIST)[number]>;
+
 /** 事件模拟器弹层组件 */
 export default function EventSimulator({ onClose }: { onClose: () => void }) {
   const trigger = useEventStore((s) => s.trigger);
@@ -40,10 +44,6 @@ export default function EventSimulator({ onClose }: { onClose: () => void }) {
     }
     setTimeout(() => setFeedback(null), 2000);
   };
-
-  const EVENTS_BY_TYPE: Record<EventType, (typeof EVENT_LIST)[number]> = Object.fromEntries(
-    EVENT_LIST.map((e) => [e.type, e])
-  ) as Record<EventType, (typeof EVENT_LIST)[number]>;
 
   return (
     <div className="fixed left-52 top-0 h-full w-80 bg-space-900/98 backdrop-blur-md border-r border-cyber-blue/30 shadow-2xl shadow-black z-50 flex flex-col">
