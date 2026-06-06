@@ -6,8 +6,9 @@ import { useCommStore } from "@/stores/commStore";
 import { useMissionStore } from "@/stores/missionStore";
 import { useSimulationStore } from "@/stores/simulationStore";
 import { useEventStore } from "@/stores/eventStore";
+import { useTimeStore } from "@/stores/timeStore";
+import { useSystemInterconnection } from "./useSystemInterconnection";
 
-/** 模拟数据定时刷新 Hook，支持暂停和速度调节 */
 export function useSimulation() {
   const running = useSimulationStore((s) => s.running);
   const speed = useSimulationStore((s) => s.speed);
@@ -19,8 +20,11 @@ export function useSimulation() {
   const updateComm = useCommStore((s) => s.updateSimulation);
   const updateMission = useMissionStore((s) => s.updateSimulation);
   const checkAutoTrigger = useEventStore((s) => s.checkAutoTrigger);
+  const advanceTime = useTimeStore((s) => s.advanceTime);
 
   const intervalRef = useRef<ReturnType<typeof setInterval>>();
+
+  useSystemInterconnection();
 
   useEffect(() => {
     if (!running) {
@@ -37,10 +41,11 @@ export function useSimulation() {
       updateComm();
       updateMission();
       checkAutoTrigger();
+      advanceTime(5);
     }, intervalMs);
 
     return () => {
       if (intervalRef.current) clearInterval(intervalRef.current);
     };
-  }, [running, speed, tick, updateStation, updateResource, updateNavigation, updateComm, updateMission, checkAutoTrigger]);
+  }, [running, speed, tick, updateStation, updateResource, updateNavigation, updateComm, updateMission, checkAutoTrigger, advanceTime]);
 }

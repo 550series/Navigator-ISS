@@ -1,17 +1,18 @@
 import { useStationStore } from "@/stores/stationStore";
 import { useSimulationStore } from "@/stores/simulationStore";
-import { Bell, Wifi, Clock, Pause, Play, Gauge } from "lucide-react";
+import { useTimeStore } from "@/stores/timeStore";
+import { Bell, Wifi, Clock, Pause, Play, Gauge, Sun, Moon } from "lucide-react";
 import { useState, useEffect } from "react";
 import type { SimulationSpeed } from "@/stores/simulationStore";
 
 const speedLabels: Record<SimulationSpeed, string> = { 1: "1x", 2: "2x", 5: "5x" };
 const speedOptions: SimulationSpeed[] = [1, 2, 5];
 
-/** 顶部状态栏组件 */
 export default function TopBar() {
   const alerts = useStationStore((s) => s.alerts);
   const acknowledgeAlert = useStationStore((s) => s.acknowledgeAlert);
   const { running, speed, toggle, setSpeed, tickCount, elapsedDays } = useSimulationStore();
+  const { getTimeString, getDateString, isDaylight } = useTimeStore();
 
   const [currentTime, setCurrentTime] = useState("");
   const [showAlerts, setShowAlerts] = useState(false);
@@ -22,26 +23,21 @@ export default function TopBar() {
   useEffect(() => {
     const timer = setInterval(() => {
       const now = new Date();
-      setCurrentTime(
-        now.toLocaleTimeString("zh-CN", { hour12: false })
-      );
+      setCurrentTime(now.toLocaleTimeString("zh-CN", { hour12: false }));
     }, 1000);
     return () => clearInterval(timer);
   }, []);
 
   return (
     <header className="h-12 border-b border-cyber-blue/20 bg-space-900/80 backdrop-blur-sm flex items-center justify-between px-4 relative z-50">
-      {/* 左侧标题 */}
       <div className="flex items-center gap-3">
         <h1 className="font-orbitron text-sm text-cyber-blue tracking-wider">
           领航员空间站管理系统
         </h1>
-        <span className="text-[10px] text-gray-600 font-rajdhani">v2.847</span>
+        <span className="text-[10px] text-gray-600 font-rajdhani">v3.0.0</span>
       </div>
 
-      {/* 右侧状态 */}
       <div className="flex items-center gap-4">
-        {/* 仿真控制 */}
         <div className="flex items-center gap-2 px-2 py-1 rounded border border-cyber-blue/20 bg-space-900/50">
           <button
             onClick={toggle}
@@ -73,19 +69,26 @@ export default function TopBar() {
           </span>
         </div>
 
-        {/* 通信状态 */}
+        <div className="flex items-center gap-1.5 text-xs">
+          {isDaylight ? (
+            <Sun size={14} className="text-cyber-amber" />
+          ) : (
+            <Moon size={14} className="text-cyber-blue" />
+          )}
+          <span className="font-rajdhani text-gray-400">{getTimeString()}</span>
+          <span className="text-[10px] text-gray-600 ml-1">{getDateString()}</span>
+        </div>
+
         <div className="flex items-center gap-1.5 text-xs">
           <Wifi size={14} className="text-cyber-green" />
           <span className="text-gray-400 font-rajdhani">LINK ACTIVE</span>
         </div>
 
-        {/* 时间 */}
         <div className="flex items-center gap-1.5 text-xs">
           <Clock size={14} className="text-gray-500" />
           <span className="font-rajdhani text-gray-400 tracking-wider">{currentTime}</span>
         </div>
 
-        {/* 告警 */}
         <div className="relative">
           <button
             onClick={() => setShowAlerts(!showAlerts)}
@@ -103,7 +106,6 @@ export default function TopBar() {
             )}
           </button>
 
-          {/* 告警下拉面板 */}
           {showAlerts && (
             <div className="absolute right-0 top-full mt-2 w-80 bg-space-800 border border-cyber-blue/20 rounded shadow-xl shadow-black/50 z-50">
               <div className="px-3 py-2 border-b border-cyber-blue/10 flex items-center justify-between">
