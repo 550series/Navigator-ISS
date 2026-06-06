@@ -5,6 +5,8 @@ import { useNavigationStore } from "@/stores/navigationStore";
 import { useCommStore } from "@/stores/commStore";
 import { useMissionStore } from "@/stores/missionStore";
 import { useEventStore } from "@/stores/eventStore";
+import { useAlertStore } from "@/stores/alertStore";
+import { useOperationLogStore } from "@/stores/operationLogStore";
 import Panel from "@/components/ui/Panel";
 import { Settings, RotateCcw, Zap, AlertTriangle, Database } from "lucide-react";
 import type { SimulationSpeed } from "@/stores/simulationStore";
@@ -27,6 +29,8 @@ export default function SettingsPage() {
   const resetComm = useCommStore((s) => s.resetAll);
   const resetMissions = useMissionStore((s) => s.resetMissions);
   const clearEventHistory = useEventStore((s) => s.clearHistory);
+  const clearAlerts = useAlertStore((s) => s.clearResolved);
+  const clearLogs = useOperationLogStore((s) => s.clearLogs);
 
   /** 重置所有数据 */
   const handleResetAll = () => {
@@ -37,6 +41,8 @@ export default function SettingsPage() {
     resetComm();
     resetMissions();
     clearEventHistory();
+    clearAlerts();
+    clearLogs();
     sim.resetTick();
   };
 
@@ -142,6 +148,8 @@ export default function SettingsPage() {
             <ResetButton label="通信系统" onReset={resetComm} />
             <ResetButton label="任务列表" onReset={resetMissions} />
             <ResetButton label="事件历史" onReset={clearEventHistory} />
+            <ResetButton label="已解决告警" onReset={clearAlerts} />
+            <ResetButton label="操作日志" onReset={clearLogs} />
           </div>
 
           <div className="border-t border-gray-800 pt-3 space-y-2">
@@ -166,7 +174,7 @@ export default function SettingsPage() {
         <div className="space-y-2 text-xs text-gray-400">
           <div className="flex justify-between">
             <span className="text-gray-500">系统版本</span>
-            <span className="text-white font-rajdhani">v2.847</span>
+            <span className="text-white font-rajdhani">v3.0.0</span>
           </div>
           <div className="flex justify-between">
             <span className="text-gray-500">仿真引擎</span>

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useEventStore } from "@/stores/eventStore";
 import { EVENT_LIST } from "@/data/events";
-import { Zap, AlertTriangle, Radio, ShieldAlert, Atom, Clock, X, Package, Droplets, Orbit, Heart, Wrench } from "lucide-react";
+import { Zap, AlertTriangle, Radio, ShieldAlert, Atom, Clock, X, Package, Droplets, Orbit, Heart, Wrench, Sun, Ship, Stethoscope, Bolt, Compass } from "lucide-react";
 import type { EventType } from "@/data/events";
 
 const eventIcons: Record<EventType, typeof Zap> = {
@@ -15,6 +15,11 @@ const eventIcons: Record<EventType, typeof Zap> = {
   gravity_anomaly: Orbit,
   crew_injury: Heart,
   system_malfunction: Wrench,
+  solar_storm: Sun,
+  hull_breach: Ship,
+  medical_emergency: Stethoscope,
+  power_fluctuation: Bolt,
+  navigation_error: Compass,
 };
 
 const severityColors: Record<string, string> = {

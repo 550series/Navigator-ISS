@@ -140,3 +140,122 @@ export interface Alert {
   timestamp: string;
   acknowledged: boolean;
 }
+
+/** 告警详情（扩展） */
+export interface AlertDetail extends Alert {
+  category: "system" | "environment" | "equipment" | "personnel";
+  handler?: string;
+  resolvedAt?: string;
+  resolution?: string;
+  relatedEquipment?: string[];
+}
+
+/** 维修记录 */
+export interface MaintenanceRecord {
+  id: string;
+  equipmentId: string;
+  equipmentName: string;
+  type: "preventive" | "corrective" | "emergency";
+  status: "scheduled" | "in_progress" | "completed" | "overdue";
+  priority: "low" | "medium" | "high" | "critical";
+  assignee: string;
+  scheduledDate: string;
+  completedDate?: string;
+  description: string;
+  partsUsed: { partId: string; partName: string; quantity: number }[];
+  notes: string[];
+}
+
+/** 备件库存 */
+export interface SparePart {
+  id: string;
+  name: string;
+  category: string;
+  quantity: number;
+  minStock: number;
+  location: string;
+  lastRestocked: string;
+}
+
+/** 太空实验 */
+export interface Experiment {
+  id: string;
+  name: string;
+  principal: string;
+  status: "planned" | "active" | "paused" | "completed" | "aborted";
+  category: "biology" | "physics" | "materials" | "earth_observation";
+  startDate: string;
+  endDate?: string;
+  objectives: string[];
+  resources: { type: string; allocated: number; used: number }[];
+  dataPoints: ExperimentDataPoint[];
+  notes: string[];
+}
+
+/** 实验数据点 */
+export interface ExperimentDataPoint {
+  timestamp: string;
+  parameters: Record<string, number>;
+  observations: string;
+}
+
+/** 应急预案 */
+export interface EmergencyPlan {
+  id: string;
+  name: string;
+  type: "fire" | "decompression" | "radiation" | "medical" | "system_failure";
+  severity: "low" | "medium" | "high" | "critical";
+  steps: EmergencyStep[];
+  resources: string[];
+  lastDrill?: string;
+  nextDrill?: string;
+}
+
+/** 应急步骤 */
+export interface EmergencyStep {
+  order: number;
+  action: string;
+  responsible: string;
+  timeLimit: number;
+  completed?: boolean;
+}
+
+/** 演练记录 */
+export interface DrillRecord {
+  id: string;
+  planId: string;
+  planName: string;
+  date: string;
+  duration: number;
+  participants: string[];
+  score: number;
+  issues: string[];
+  improvements: string[];
+}
+
+/** 操作日志 */
+export interface OperationLog {
+  id: string;
+  timestamp: string;
+  userId: string;
+  userName: string;
+  action: string;
+  target: string;
+  details: string;
+  result: "success" | "failure" | "pending";
+}
+
+/** 系统事件 */
+export interface SystemEvent {
+  id: string;
+  type: "solar_storm" | "meteor_impact" | "equipment_failure" | "supply_arrival" | "crew_rotation" | "medical_emergency" | "communication_loss" | "propulsion_anomaly";
+  severity: "low" | "medium" | "high" | "critical";
+  timestamp: string;
+  description: string;
+  impact: {
+    systems: string[];
+    duration: number;
+    recoveryActions: string[];
+  };
+  resolved: boolean;
+}

@@ -11,6 +11,11 @@ import {
   Atom,
   ChevronLeft,
   ChevronRight,
+  Bell,
+  Wrench,
+  FlaskConical,
+  ShieldAlert,
+  FileText,
 } from "lucide-react";
 import { useState } from "react";
 import EventSimulator from "./EventSimulator";
@@ -23,6 +28,11 @@ const navItems = [
   { path: "/communication", label: "通信系统", icon: Radio },
   { path: "/missions", label: "任务管理", icon: ClipboardList },
   { path: "/crew", label: "船员花名册", icon: Users },
+  { path: "/alerts", label: "告警中心", icon: Bell },
+  { path: "/maintenance", label: "维修日志", icon: Wrench },
+  { path: "/experiments", label: "实验管理", icon: FlaskConical },
+  { path: "/emergency", label: "应急响应", icon: ShieldAlert },
+  { path: "/logs", label: "操作日志", icon: FileText },
   { path: "/settings", label: "系统设置", icon: Settings },
 ];
 

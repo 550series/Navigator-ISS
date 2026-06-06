@@ -32,7 +32,12 @@ export type EventType =
   | "oxygen_leak"
   | "gravity_anomaly"
   | "crew_injury"
-  | "system_malfunction";
+  | "system_malfunction"
+  | "solar_storm"
+  | "hull_breach"
+  | "medical_emergency"
+  | "power_fluctuation"
+  | "navigation_error";
 
 export interface EventDef {
   type: EventType;
@@ -242,6 +247,100 @@ export const EVENTS: Record<EventType, EventDef> = {
         equipmentDegrade: [target.id],
       };
     },
+  },
+  solar_storm: {
+    type: "solar_storm",
+    name: "太阳风暴",
+    description: "强太阳风暴袭击，辐射水平急剧上升，通信严重受扰。",
+    severity: "critical",
+    cooldown: 150_000,
+    autoTrigger: true,
+    autoProbability: 0.001,
+    effect: () => ({
+      alert: {
+        level: "critical",
+        source: "天文观测",
+        message: "强太阳风暴来袭！全站进入紧急辐射防护状态，通信可能中断。",
+      },
+      commPenalty: 0.8,
+      cabinDamage: ["c1", "c2", "c3"],
+    }),
+  },
+  hull_breach: {
+    type: "hull_breach",
+    name: "船体破裂",
+    description: "检测到船体微裂缝，舱室气压下降。",
+    severity: "critical",
+    cooldown: 200_000,
+    autoTrigger: true,
+    autoProbability: 0.0008,
+    effect: () => ({
+      alert: {
+        level: "critical",
+        source: "结构监测",
+        message: "检测到船体微裂缝！生活舱-B 气压下降，紧急封闭中。",
+      },
+      cabinDamage: ["c3"],
+      resourceChange: [{ id: "r11", delta: -500 }],
+    }),
+  },
+  medical_emergency: {
+    type: "medical_emergency",
+    name: "医疗紧急事件",
+    description: "多名船员出现辐射症状，需要紧急医疗处理。",
+    severity: "warning",
+    cooldown: 120_000,
+    autoTrigger: true,
+    autoProbability: 0.0015,
+    effect: (ctx) => {
+      const healthy = ctx.personnel.filter((p) => p.healthStatus === "healthy");
+      if (healthy.length === 0) return { alert: { level: "info", source: "医疗中心", message: "全员已有伤情，无新增病例。" } };
+      const count = Math.min(2, healthy.length);
+      const targets = healthy.sort(() => Math.random() - 0.5).slice(0, count);
+      return {
+        alert: {
+          level: "warning",
+          source: "医疗中心",
+          message: `${targets.map((t) => t.name).join("、")}出现辐射症状，已隔离治疗。`,
+        },
+        personnelHealthChange: targets.map((t) => ({ id: t.id, health: "minor" as const })),
+      };
+    },
+  },
+  power_fluctuation: {
+    type: "power_fluctuation",
+    name: "电力波动",
+    description: "电力系统出现不稳定波动，影响全站设备运行。",
+    severity: "warning",
+    cooldown: 90_000,
+    autoTrigger: true,
+    autoProbability: 0.002,
+    effect: () => ({
+      alert: {
+        level: "warning",
+        source: "动力系统",
+        message: "电力系统不稳定，输出功率波动较大，建议降低非必要系统功耗。",
+      },
+      reactorOverride: 650,
+    }),
+  },
+  navigation_error: {
+    type: "navigation_error",
+    name: "导航偏差",
+    description: "导航传感器数据异常，航线出现偏差。",
+    severity: "warning",
+    cooldown: 100_000,
+    autoTrigger: true,
+    autoProbability: 0.002,
+    effect: () => ({
+      alert: {
+        level: "warning",
+        source: "导航系统",
+        message: "导航传感器数据异常，航线偏差增大，需要手动校正。",
+      },
+      deviationDelta: 0.005,
+      thrustDelta: -0.1,
+    }),
   },
 };
 
