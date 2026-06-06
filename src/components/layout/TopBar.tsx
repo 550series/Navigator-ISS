@@ -23,7 +23,7 @@ export default function TopBar() {
   }, []);
 
   return (
-    <header className="h-12 border-b border-cyber-blue/20 bg-space-900/80 backdrop-blur-sm flex items-center justify-between px-4">
+    <header className="h-12 border-b border-cyber-blue/20 bg-space-900/80 backdrop-blur-sm flex items-center justify-between px-4 relative z-50">
       {/* 左侧标题 */}
       <div className="flex items-center gap-3">
         <h1 className="font-orbitron text-sm text-cyber-blue tracking-wider">
