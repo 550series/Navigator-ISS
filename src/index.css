@@ -11,12 +11,14 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   
-  /* CSS 变量 */
+  /* 主题色变量 */
   --color-cyber-blue: #00d4ff;
+  --color-cyber-blue-light: #33ddff;
   --color-cyber-amber: #ff8c00;
   --color-cyber-red: #ff3b3b;
   --color-cyber-green: #00ff88;
-  --color-space-950: #060a12;
+  --color-cyber-purple: #a855f7;
+  --color-space-950: #050810;
   --color-space-900: #0a0e17;
   --color-space-800: #0c1e3a;
 }
@@ -28,7 +30,7 @@ body {
   min-height: 100vh;
 }
 
-/* 自定义滚动条 */
+/* ==================== 滚动条 ==================== */
 ::-webkit-scrollbar {
   width: 4px;
   height: 4px;
@@ -48,7 +50,15 @@ body {
   background: rgba(0, 212, 255, 0.4);
 }
 
-/* 扫描线叠加效果 */
+.scrollbar-thin::-webkit-scrollbar {
+  width: 3px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background: rgba(0, 212, 255, 0.15);
+}
+
+/* ==================== 背景效果 ==================== */
 .scanline-overlay {
   position: relative;
 }
@@ -61,14 +71,35 @@ body {
     0deg,
     transparent,
     transparent 2px,
-    rgba(0, 212, 255, 0.01) 2px,
-    rgba(0, 212, 255, 0.01) 4px
+    rgba(0, 212, 255, 0.008) 2px,
+    rgba(0, 212, 255, 0.008) 4px
   );
   pointer-events: none;
   z-index: 50;
 }
 
-/* 全息发光边框 */
+.grid-bg {
+  background-image:
+    linear-gradient(rgba(0, 212, 255, 0.012) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 212, 255, 0.012) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+
+.stars-bg {
+  background-image:
+    radial-gradient(1px 1px at 10% 20%, rgba(255, 255, 255, 0.15), transparent),
+    radial-gradient(1px 1px at 30% 60%, rgba(255, 255, 255, 0.1), transparent),
+    radial-gradient(1px 1px at 50% 10%, rgba(255, 255, 255, 0.08), transparent),
+    radial-gradient(1px 1px at 70% 80%, rgba(255, 255, 255, 0.12), transparent),
+    radial-gradient(1px 1px at 90% 40%, rgba(255, 255, 255, 0.15), transparent),
+    radial-gradient(1.5px 1.5px at 15% 85%, rgba(0, 212, 255, 0.12), transparent),
+    radial-gradient(1.5px 1.5px at 85% 15%, rgba(0, 212, 255, 0.08), transparent),
+    radial-gradient(1px 1px at 45% 45%, rgba(255, 255, 255, 0.08), transparent),
+    radial-gradient(1px 1px at 65% 25%, rgba(255, 255, 255, 0.1), transparent),
+    radial-gradient(1px 1px at 25% 75%, rgba(255, 255, 255, 0.08), transparent);
+}
+
+/* ==================== 全息边框 ==================== */
 .holo-border {
   border: 1px solid rgba(0, 212, 255, 0.2);
   box-shadow: 0 0 8px rgba(0, 212, 255, 0.06), inset 0 0 8px rgba(0, 212, 255, 0.03);
@@ -80,28 +111,18 @@ body {
   box-shadow: 0 0 16px rgba(0, 212, 255, 0.12), inset 0 0 12px rgba(0, 212, 255, 0.06);
 }
 
-/* 告警脉冲 */
+/* ==================== 动画效果 ==================== */
 .alert-pulse {
   animation: alert-pulse 1.5s ease-in-out infinite;
 }
 
 @keyframes alert-pulse {
-  0%, 100% {
-    box-shadow: 0 0 4px rgba(255, 59, 59, 0.2);
-  }
-  50% {
-    box-shadow: 0 0 16px rgba(255, 59, 59, 0.4);
-  }
+  0%, 100% { box-shadow: 0 0 4px rgba(255, 59, 59, 0.2); }
+  50% { box-shadow: 0 0 16px rgba(255, 59, 59, 0.4); }
 }
 
-/* 数据流动画背景 */
 .data-flow-bg {
-  background: linear-gradient(
-    90deg,
-    transparent 0%,
-    rgba(0, 212, 255, 0.03) 50%,
-    transparent 100%
-  );
+  background: linear-gradient(90deg, transparent 0%, rgba(0, 212, 255, 0.03) 50%, transparent 100%);
   background-size: 200% 100%;
   animation: data-flow 3s linear infinite;
 }
@@ -111,35 +132,10 @@ body {
   100% { background-position: 200% 0%; }
 }
 
-/* 网格背景 */
-.grid-bg {
-  background-image:
-    linear-gradient(rgba(0, 212, 255, 0.015) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(0, 212, 255, 0.015) 1px, transparent 1px);
-  background-size: 40px 40px;
-}
-
-/* 星点背景 */
-.stars-bg {
-  background-image:
-    radial-gradient(1px 1px at 10% 20%, rgba(255, 255, 255, 0.2), transparent),
-    radial-gradient(1px 1px at 30% 60%, rgba(255, 255, 255, 0.15), transparent),
-    radial-gradient(1px 1px at 50% 10%, rgba(255, 255, 255, 0.1), transparent),
-    radial-gradient(1px 1px at 70% 80%, rgba(255, 255, 255, 0.15), transparent),
-    radial-gradient(1px 1px at 90% 40%, rgba(255, 255, 255, 0.2), transparent),
-    radial-gradient(1.5px 1.5px at 15% 85%, rgba(0, 212, 255, 0.15), transparent),
-    radial-gradient(1.5px 1.5px at 85% 15%, rgba(0, 212, 255, 0.1), transparent),
-    radial-gradient(1px 1px at 45% 45%, rgba(255, 255, 255, 0.1), transparent),
-    radial-gradient(1px 1px at 65% 25%, rgba(255, 255, 255, 0.15), transparent),
-    radial-gradient(1px 1px at 25% 75%, rgba(255, 255, 255, 0.1), transparent);
-}
-
-/* 环形进度条 */
 .gauge-ring {
   transition: stroke-dashoffset 1s ease-in-out;
 }
 
-/* 数值闪烁 */
 .value-flash {
   animation: value-flash 0.3s ease-out;
 }
@@ -149,87 +145,16 @@ body {
   100% { color: inherit; text-shadow: none; }
 }
 
-/* 卡片入场动画 */
 .card-enter {
   animation: card-enter 0.4s ease-out forwards;
   opacity: 0;
 }
 
 @keyframes card-enter {
-  from {
-    opacity: 0;
-    transform: translateY(8px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
-/* 渐变边框效果 */
-.gradient-border {
-  position: relative;
-}
-
-.gradient-border::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  padding: 1px;
-  background: linear-gradient(135deg, rgba(0, 212, 255, 0.25), rgba(0, 212, 255, 0.03));
-  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-  -webkit-mask-composite: xor;
-  mask-composite: exclude;
-  pointer-events: none;
-}
-
-/* 光晕效果 */
-.glow-effect {
-  position: relative;
-}
-
-.glow-effect::after {
-  content: "";
-  position: absolute;
-  top: -2px;
-  left: -2px;
-  right: -2px;
-  bottom: -2px;
-  background: radial-gradient(circle at center, rgba(0, 212, 255, 0.08) 0%, transparent 70%);
-  border-radius: inherit;
-  z-index: -1;
-  opacity: 0;
-  transition: opacity 0.3s;
-}
-
-.glow-effect:hover::after {
-  opacity: 1;
-}
-
-/* 科幻按钮样式 */
-.cyber-btn {
-  position: relative;
-  overflow: hidden;
-  transition: all 0.3s ease;
-}
-
-.cyber-btn::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(0, 212, 255, 0.08), transparent);
-  transition: left 0.5s;
-}
-
-.cyber-btn:hover::before {
-  left: 100%;
-}
-
-/* 状态指示灯 */
 .status-dot {
   width: 6px;
   height: 6px;
@@ -252,7 +177,24 @@ body {
   50% { transform: scale(1.5); opacity: 0; }
 }
 
-/* 文字渐变效果 */
+/* ==================== 渐变效果 ==================== */
+.gradient-border {
+  position: relative;
+}
+
+.gradient-border::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(135deg, rgba(0, 212, 255, 0.25), rgba(0, 212, 255, 0.03));
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
 .text-gradient {
   background: linear-gradient(135deg, var(--color-cyber-blue), var(--color-cyber-green));
   -webkit-background-clip: text;
@@ -260,7 +202,57 @@ body {
   background-clip: text;
 }
 
-/* 加载骨架屏 */
+.divider-glow {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(0, 212, 255, 0.25), transparent);
+}
+
+/* ==================== 光晕效果 ==================== */
+.glow-effect {
+  position: relative;
+}
+
+.glow-effect::after {
+  content: "";
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  background: radial-gradient(circle at center, rgba(0, 212, 255, 0.08) 0%, transparent 70%);
+  border-radius: inherit;
+  z-index: -1;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.glow-effect:hover::after {
+  opacity: 1;
+}
+
+/* ==================== 按钮样式 ==================== */
+.cyber-btn {
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.cyber-btn::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(0, 212, 255, 0.08), transparent);
+  transition: left 0.5s;
+}
+
+.cyber-btn:hover::before {
+  left: 100%;
+}
+
+/* ==================== 骨架屏 ==================== */
 .skeleton {
   background: linear-gradient(90deg, rgba(0, 212, 255, 0.03) 25%, rgba(0, 212, 255, 0.06) 50%, rgba(0, 212, 255, 0.03) 75%);
   background-size: 200% 100%;
@@ -272,20 +264,14 @@ body {
   100% { background-position: -200% 0; }
 }
 
-/* 分割线发光效果 */
-.divider-glow {
-  height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(0, 212, 255, 0.25), transparent);
-}
-
-/* 输入框聚焦效果 */
+/* ==================== 输入框 ==================== */
 input:focus, select:focus, textarea:focus {
   outline: none;
   border-color: rgba(0, 212, 255, 0.4);
   box-shadow: 0 0 0 2px rgba(0, 212, 255, 0.08);
 }
 
-/* 工具提示样式 */
+/* ==================== 工具提示 ==================== */
 .tooltip {
   position: relative;
 }
@@ -312,16 +298,20 @@ input:focus, select:focus, textarea:focus {
   opacity: 1;
 }
 
-/* 滚动条优化 */
-.scrollbar-thin::-webkit-scrollbar {
-  width: 3px;
+/* ==================== 面板样式 ==================== */
+.data-card {
+  background: linear-gradient(135deg, rgba(12, 30, 58, 0.6), rgba(10, 14, 23, 0.8));
+  border: 1px solid rgba(0, 212, 255, 0.1);
+  border-radius: 0.75rem;
+  backdrop-filter: blur(8px);
+  transition: all 0.3s ease;
 }
 
-.scrollbar-thin::-webkit-scrollbar-thumb {
-  background: rgba(0, 212, 255, 0.15);
+.data-card:hover {
+  border-color: rgba(0, 212, 255, 0.25);
+  box-shadow: 0 0 16px rgba(0, 212, 255, 0.08);
 }
 
-/* 面板悬停效果 */
 .panel-hover {
   transition: all 0.2s ease;
 }
@@ -331,7 +321,7 @@ input:focus, select:focus, textarea:focus {
   box-shadow: 0 0 12px rgba(0, 212, 255, 0.08);
 }
 
-/* 标签页切换动画 */
+/* ==================== 标签页 ==================== */
 .tab-transition {
   transition: all 0.2s ease;
 }
@@ -342,30 +332,59 @@ input:focus, select:focus, textarea:focus {
   color: var(--color-cyber-blue);
 }
 
-/* 数据卡片样式 */
-.data-card {
-  background: linear-gradient(135deg, rgba(12, 30, 58, 0.6), rgba(10, 14, 23, 0.8));
-  border: 1px solid rgba(0, 212, 255, 0.1);
-  border-radius: 0.5rem;
-  backdrop-filter: blur(8px);
-}
-
-.data-card:hover {
-  border-color: rgba(0, 212, 255, 0.25);
-  box-shadow: 0 0 16px rgba(0, 212, 255, 0.08);
-}
-
-/* 进度条发光效果 */
+/* ==================== 进度条 ==================== */
 .progress-glow {
   box-shadow: 0 0 8px rgba(0, 212, 255, 0.3);
 }
 
-/* 渐变背景 */
+/* ==================== 渐变背景 ==================== */
 .gradient-bg {
   background: linear-gradient(180deg, var(--color-space-950) 0%, var(--color-space-900) 100%);
 }
 
-/* 响应式调整 */
+/* ==================== 发光边框动画 ==================== */
+.border-glow-animated {
+  animation: border-glow 3s ease-in-out infinite;
+}
+
+@keyframes border-glow {
+  0%, 100% { border-color: rgba(0, 212, 255, 0.2); }
+  50% { border-color: rgba(0, 212, 255, 0.4); }
+}
+
+/* ==================== 闪烁效果 ==================== */
+.blink-slow {
+  animation: blink-slow 2s ease-in-out infinite;
+}
+
+@keyframes blink-slow {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+/* ==================== 扫描效果 ==================== */
+.scan-effect {
+  position: relative;
+  overflow: hidden;
+}
+
+.scan-effect::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(0, 212, 255, 0.1), transparent);
+  animation: scan 3s linear infinite;
+}
+
+@keyframes scan {
+  0% { left: -100%; }
+  100% { left: 100%; }
+}
+
+/* ==================== 响应式调整 ==================== */
 @media (max-width: 768px) {
   .grid-bg {
     background-size: 20px 20px;

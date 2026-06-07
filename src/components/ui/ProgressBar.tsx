@@ -7,29 +7,41 @@ interface ProgressBarProps {
   showPercent?: boolean;
   color?: string;
   height?: number;
+  variant?: "default" | "glow" | "gradient";
 }
 
-const ProgressBar = memo(function ProgressBar({ value, max, label, showPercent = true, color, height = 6 }: ProgressBarProps) {
+const ProgressBar = memo(function ProgressBar({ 
+  value, 
+  max, 
+  label, 
+  showPercent = true, 
+  color, 
+  height = 6,
+  variant = "gradient"
+}: ProgressBarProps) {
   const percent = Math.min((value / max) * 100, 100);
 
   const getBarStyle = () => {
-    if (color) return { bg: color, glow: "" };
+    if (color) return { bg: color, glow: "", gradient: "" };
 
     if (percent < 20) {
       return {
-        bg: "bg-gradient-to-r from-cyber-red to-cyber-red-dim",
+        bg: "bg-cyber-red",
         glow: "shadow-[0_0_8px_rgba(255,59,59,0.4)]",
+        gradient: "from-cyber-red to-cyber-red-dim",
       };
     }
     if (percent < 40) {
       return {
-        bg: "bg-gradient-to-r from-cyber-amber to-cyber-amber-dim",
+        bg: "bg-cyber-amber",
         glow: "shadow-[0_0_8px_rgba(255,140,0,0.4)]",
+        gradient: "from-cyber-amber to-cyber-amber-dim",
       };
     }
     return {
-      bg: "bg-gradient-to-r from-cyber-blue to-cyber-cyan",
+      bg: "bg-cyber-blue",
       glow: "shadow-[0_0_8px_rgba(0,212,255,0.4)]",
+      gradient: "from-cyber-blue to-cyber-cyan",
     };
   };
 
@@ -50,13 +62,24 @@ const ProgressBar = memo(function ProgressBar({ value, max, label, showPercent =
         </div>
       )}
       <div
-        className="w-full bg-space-700/50 rounded-full overflow-hidden"
+        className="relative w-full bg-space-700/50 rounded-full overflow-hidden"
         style={{ height }}
       >
+        {/* 背景装饰 */}
+        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent" />
+        
+        {/* 进度条 */}
         <div
-          className={`${barStyle.bg} ${barStyle.glow} rounded-full transition-all duration-700 ease-out`}
-          style={{ width: `${percent}%`, height }}
-        />
+          className={`relative h-full rounded-full transition-all duration-700 ease-out ${
+            variant === "gradient" ? `bg-gradient-to-r ${barStyle.gradient}` : barStyle.bg
+          } ${variant === "glow" ? barStyle.glow : ""}`}
+          style={{ width: `${percent}%` }}
+        >
+          {/* 发光效果 */}
+          {variant === "glow" && (
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent to-white/20" />
+          )}
+        </div>
       </div>
     </div>
   );
