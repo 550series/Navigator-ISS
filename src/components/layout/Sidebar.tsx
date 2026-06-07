@@ -18,6 +18,7 @@ import {
   FileText,
 } from "lucide-react";
 import { useState } from "react";
+import { useSidebarStore } from "@/stores/sidebarStore";
 import EventSimulator from "./EventSimulator";
 
 const navItems = [
@@ -37,13 +38,13 @@ const navItems = [
 ];
 
 export default function Sidebar() {
-  const [collapsed, setCollapsed] = useState(false);
+  const { collapsed, toggle } = useSidebarStore();
   const [showEvents, setShowEvents] = useState(false);
   const location = useLocation();
 
   return (
     <aside
-      className={`fixed left-0 top-0 h-full z-40 flex flex-col border-r border-cyber-blue/20 bg-space-900/95 backdrop-blur-sm transition-all duration-300 ${
+      className={`fixed left-0 top-0 h-full z-40 flex flex-col border-r border-cyber-blue/20 bg-space-900 backdrop-blur-sm transition-all duration-300 ${
         collapsed ? "w-16" : "w-52"
       }`}
     >
@@ -108,7 +109,7 @@ export default function Sidebar() {
 
       {/* 折叠按钮 */}
       <button
-        onClick={() => setCollapsed(!collapsed)}
+        onClick={toggle}
         className="flex items-center justify-center h-10 border-t border-cyber-blue/20 text-gray-500 hover:text-cyber-blue hover:bg-cyber-blue/5 transition-colors"
       >
         {collapsed ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
