@@ -15,6 +15,8 @@ const Maintenance = lazy(() => import("@/pages/Maintenance"));
 const Experiments = lazy(() => import("@/pages/Experiments"));
 const Emergency = lazy(() => import("@/pages/Emergency"));
 const OperationLog = lazy(() => import("@/pages/OperationLog"));
+const SpaceEnvironment = lazy(() => import("@/pages/SpaceEnvironment"));
+const CrewManagement = lazy(() => import("@/pages/CrewManagement"));
 const SettingsPage = lazy(() => import("@/pages/Settings"));
 
 export default function App() {
@@ -35,6 +37,8 @@ export default function App() {
             <Route path="/experiments" element={<Experiments />} />
             <Route path="/emergency" element={<Emergency />} />
             <Route path="/logs" element={<OperationLog />} />
+            <Route path="/space-environment" element={<SpaceEnvironment />} />
+            <Route path="/crew-management" element={<CrewManagement />} />
             <Route path="/settings" element={<SettingsPage />} />
           </Route>
         </Routes>

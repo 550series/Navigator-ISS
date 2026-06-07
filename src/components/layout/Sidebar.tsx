@@ -16,6 +16,8 @@ import {
   FlaskConical,
   ShieldAlert,
   FileText,
+  Globe,
+  UserCog,
 } from "lucide-react";
 import { useState } from "react";
 import { useSidebarStore } from "@/stores/sidebarStore";
@@ -29,6 +31,8 @@ const navItems = [
   { path: "/communication", label: "通信系统", icon: Radio },
   { path: "/missions", label: "任务管理", icon: ClipboardList },
   { path: "/crew", label: "船员花名册", icon: Users },
+  { path: "/crew-management", label: "船员管理", icon: UserCog },
+  { path: "/space-environment", label: "太空环境", icon: Globe },
   { path: "/alerts", label: "告警中心", icon: Bell },
   { path: "/maintenance", label: "维修日志", icon: Wrench },
   { path: "/experiments", label: "实验管理", icon: FlaskConical },
