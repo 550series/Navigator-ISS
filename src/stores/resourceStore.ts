@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
-import type { Resource, Personnel, Equipment } from "@/data/types";
+import type { Resource, Personnel, Equipment, ResourceForecast, SupplyPlan, ResourceAllocation, ResourceRecycling } from "@/data/types";
 import { initialResources, initialPersonnel, initialEquipment } from "@/data/mockData";
 import { clamp } from "@/utils/formatters";
 
@@ -8,31 +8,78 @@ interface ResourceState {
   resources: Resource[];
   personnel: Personnel[];
   equipment: Equipment[];
-  /** 24h 资源消耗采样（最近 24 个 tick，2 分钟采集一次），用于趋势图 */
   history: { tick: number; r1: number; r3: number; r5: number; r11: number }[];
   tickCount: number;
+  supplyPlans: SupplyPlan[];
+  allocations: ResourceAllocation[];
+  recyclingSystems: ResourceRecycling[];
   updateSimulation: () => void;
-  /** 调整船员健康状态（事件影响） */
   setPersonnelHealth: (id: string, health: Personnel["healthStatus"]) => void;
-  /** 物资补给：增加指定物资的数量 */
   resupplyResource: (id: string, amount: number) => void;
-  /** 设备维护：将设备恢复为运行状态 */
   repairEquipment: (id: string) => void;
-  /** 设备启停：切换设备在线/离线状态 */
   toggleEquipment: (id: string) => void;
-  /** 重置所有数据到初始状态 */
+  addSupplyPlan: (plan: Omit<SupplyPlan, "id">) => void;
+  updateSupplyPlan: (id: string, updates: Partial<SupplyPlan>) => void;
+  getForecasts: () => ResourceForecast[];
+  getAllocations: () => ResourceAllocation[];
+  getRecyclingEfficiency: () => number;
   resetAll: () => void;
 }
 
-/** 资源管理 Store */
+const initialSupplyPlans: SupplyPlan[] = [
+  {
+    id: "supply-001",
+    name: "定期补给 - Q3 2026",
+    status: "in_transit",
+    launchDate: "2026-06-01",
+    arrivalDate: "2026-06-15",
+    items: [
+      { resourceId: "r1", resourceName: "食物", quantity: 5000, unit: "kg" },
+      { resourceId: "r3", resourceName: "水", quantity: 3000, unit: "L" },
+      { resourceId: "r5", resourceName: "医疗物资", quantity: 500, unit: "kg" },
+    ],
+    totalMass: 8500,
+    priority: "high",
+  },
+  {
+    id: "supply-002",
+    name: "紧急补给 - 氧气",
+    status: "planned",
+    launchDate: "2026-06-20",
+    arrivalDate: "2026-06-25",
+    items: [
+      { resourceId: "r11", resourceName: "氧气", quantity: 2000, unit: "kg" },
+    ],
+    totalMass: 2000,
+    priority: "critical",
+  },
+];
+
+const initialAllocations: ResourceAllocation[] = [
+  { id: "alloc-1", systemName: "生命维持系统", resourceId: "r11", resourceName: "氧气", allocated: 100, used: 78, efficiency: 95 },
+  { id: "alloc-2", systemName: "推进系统", resourceId: "r7", resourceName: "燃料", allocated: 100, used: 65, efficiency: 88 },
+  { id: "alloc-3", systemName: "电力系统", resourceId: "r9", resourceName: "电池", allocated: 100, used: 45, efficiency: 92 },
+  { id: "alloc-4", systemName: "水循环系统", resourceId: "r3", resourceName: "水", allocated: 100, used: 82, efficiency: 97 },
+];
+
+const initialRecyclingSystems: ResourceRecycling[] = [
+  { id: "rec-1", type: "water", inputAmount: 100, outputAmount: 95, efficiency: 95, status: "active" },
+  { id: "rec-2", type: "air", inputAmount: 100, outputAmount: 98, efficiency: 98, status: "active" },
+  { id: "rec-3", type: "waste", inputAmount: 100, outputAmount: 30, efficiency: 30, status: "active" },
+  { id: "rec-4", type: "energy", inputAmount: 100, outputAmount: 85, efficiency: 85, status: "active" },
+];
+
 export const useResourceStore = create<ResourceState>()(
   persist(
-    (set) => ({
+    (set, get) => ({
       resources: initialResources,
       personnel: initialPersonnel,
       equipment: initialEquipment,
       history: [],
       tickCount: 0,
+      supplyPlans: initialSupplyPlans,
+      allocations: initialAllocations,
+      recyclingSystems: initialRecyclingSystems,
 
       updateSimulation: () =>
         set((state) => {
@@ -95,17 +142,75 @@ export const useResourceStore = create<ResourceState>()(
           ),
         })),
 
+      addSupplyPlan: (plan) => {
+        const newPlan: SupplyPlan = {
+          ...plan,
+          id: `supply-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
+        };
+        set((state) => ({
+          supplyPlans: [newPlan, ...state.supplyPlans],
+        }));
+      },
+
+      updateSupplyPlan: (id, updates) =>
+        set((state) => ({
+          supplyPlans: state.supplyPlans.map((p) => (p.id === id ? { ...p, ...updates } : p)),
+        })),
+
+      getForecasts: () => {
+        const { resources } = get();
+        return resources
+          .filter((r) => r.consumptionRate > 0)
+          .map((r) => {
+            const daysUntilDepletion = r.quantity / (r.consumptionRate * 0.005 * 12 * 24);
+            const projectedLevel = Math.max(0, r.quantity - r.consumptionRate * 30);
+            const recommendedAction =
+              daysUntilDepletion < 7 ? "resupply" :
+              daysUntilDepletion < 14 ? "reduce" :
+              daysUntilDepletion < 30 ? "monitor" : "none";
+            return {
+              resourceId: r.id,
+              resourceName: r.name,
+              currentLevel: r.quantity,
+              projectedLevel,
+              daysUntilDepletion: Math.round(daysUntilDepletion),
+              recommendedAction,
+              confidence: 0.85,
+            };
+          });
+      },
+
+      getAllocations: () => {
+        const { allocations } = get();
+        return allocations;
+      },
+
+      getRecyclingEfficiency: () => {
+        const { recyclingSystems } = get();
+        const activeSystems = recyclingSystems.filter((s) => s.status === "active");
+        if (activeSystems.length === 0) return 0;
+        return activeSystems.reduce((sum, s) => sum + s.efficiency, 0) / activeSystems.length;
+      },
+
       resetAll: () => set({
         resources: initialResources,
         personnel: initialPersonnel,
         equipment: initialEquipment,
         history: [],
         tickCount: 0,
+        supplyPlans: initialSupplyPlans,
+        allocations: initialAllocations,
+        recyclingSystems: initialRecyclingSystems,
       }),
     }),
     {
       name: "navigator-iss-resources",
       storage: createJSONStorage(() => localStorage),
+      partialize: (state) => ({
+        supplyPlans: state.supplyPlans,
+        allocations: state.allocations,
+        recyclingSystems: state.recyclingSystems,
+      }),
     }
   )
 );

@@ -54,6 +54,58 @@ export interface Resource {
   alertLevel: "normal" | "low" | "critical";
 }
 
+/** 资源预测 */
+export interface ResourceForecast {
+  resourceId: string;
+  resourceName: string;
+  currentLevel: number;
+  projectedLevel: number;
+  daysUntilDepletion: number;
+  recommendedAction: "none" | "monitor" | "reduce" | "resupply";
+  confidence: number;
+}
+
+/** 补给计划 */
+export interface SupplyPlan {
+  id: string;
+  name: string;
+  status: "planned" | "in_transit" | "arrived" | "cancelled";
+  launchDate: string;
+  arrivalDate: string;
+  items: SupplyItem[];
+  totalMass: number;
+  priority: "low" | "medium" | "high" | "critical";
+}
+
+/** 补给物资 */
+export interface SupplyItem {
+  resourceId: string;
+  resourceName: string;
+  quantity: number;
+  unit: string;
+}
+
+/** 资源分配 */
+export interface ResourceAllocation {
+  id: string;
+  systemName: string;
+  resourceId: string;
+  resourceName: string;
+  allocated: number;
+  used: number;
+  efficiency: number;
+}
+
+/** 资源回收 */
+export interface ResourceRecycling {
+  id: string;
+  type: "water" | "air" | "waste" | "energy";
+  inputAmount: number;
+  outputAmount: number;
+  efficiency: number;
+  status: "active" | "maintenance" | "offline";
+}
+
 /** 人员信息 */
 export interface Personnel {
   id: string;
