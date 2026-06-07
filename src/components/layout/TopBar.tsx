@@ -1,7 +1,7 @@
 import { useStationStore } from "@/stores/stationStore";
 import { useSimulationStore } from "@/stores/simulationStore";
 import { useTimeStore } from "@/stores/timeStore";
-import { Bell, Clock, Pause, Play, Gauge, Sun, Moon } from "lucide-react";
+import { Bell, Clock, Pause, Play, Gauge, Sun, Moon, Cpu, HardDrive } from "lucide-react";
 import { useState, useEffect } from "react";
 import type { SimulationSpeed } from "@/stores/simulationStore";
 
@@ -29,19 +29,21 @@ export default function TopBar() {
   }, []);
 
   return (
-    <header className="h-12 border-b border-cyber-blue/20 bg-space-900/80 backdrop-blur-sm flex items-center justify-between px-4 relative z-50">
-      <div className="flex items-center gap-3">
+    <header className="h-12 border-b border-cyber-blue/15 bg-space-900/80 backdrop-blur-md flex items-center justify-between px-4 relative z-50">
+      {/* 左侧区域 */}
+      <div className="flex items-center gap-4">
         <h1 className="font-orbitron text-sm text-cyber-blue tracking-wider">
           领航员空间站管理系统
         </h1>
-        <span className="text-[10px] text-gray-600 font-rajdhani px-2 py-0.5 rounded border border-gray-800">
+        <span className="text-[10px] text-gray-600 font-rajdhani px-2 py-0.5 rounded-full border border-gray-800 bg-space-800/50">
           v3.0.0
         </span>
       </div>
 
-      <div className="flex items-center gap-3">
-        {/* 仿真控制 */}
-        <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg border border-cyber-blue/20 bg-space-800/50">
+      {/* 右侧状态区 */}
+      <div className="flex items-center gap-2">
+        {/* 仿真控制区 */}
+        <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg border border-cyber-blue/15 bg-space-800/50">
           <button
             onClick={toggle}
             className={`p-1 rounded transition-colors ${
@@ -51,15 +53,16 @@ export default function TopBar() {
             }`}
             title={running ? "暂停仿真" : "恢复仿真"}
           >
-            {running ? <Pause size={14} /> : <Play size={14} />}
+            {running ? <Pause size={12} /> : <Play size={12} />}
           </button>
-          <div className="flex items-center gap-1">
-            <Gauge size={12} className="text-gray-500" />
+          <div className="w-px h-4 bg-gray-700" />
+          <div className="flex items-center gap-0.5">
+            <Gauge size={10} className="text-gray-500" />
             {speedOptions.map((s) => (
               <button
                 key={s}
                 onClick={() => setSpeed(s)}
-                className={`text-[10px] px-1.5 py-0.5 rounded transition-colors font-rajdhani font-bold ${
+                className={`text-[10px] px-1 py-0.5 rounded transition-colors font-rajdhani font-bold ${
                   speed === s
                     ? "bg-cyber-blue/20 text-cyber-blue"
                     : "text-gray-500 hover:text-gray-300"
@@ -69,39 +72,49 @@ export default function TopBar() {
               </button>
             ))}
           </div>
-          <span className="text-[10px] text-gray-500 font-rajdhani border-l border-gray-700 pl-2">
+          <div className="w-px h-4 bg-gray-700" />
+          <span className="text-[10px] text-gray-500 font-rajdhani">
             D+{Math.floor(elapsedDays)} | T{tickCount}
           </span>
         </div>
 
         {/* 时间显示 */}
-        <div className="flex items-center gap-1.5 text-xs px-2 py-1 rounded-lg border border-gray-800 bg-space-800/30">
+        <div className="flex items-center gap-1.5 px-2 py-1 rounded-lg border border-gray-800/50 bg-space-800/30">
           {isDaylight ? (
-            <Sun size={14} className="text-cyber-amber" />
+            <Sun size={12} className="text-cyber-amber" />
           ) : (
-            <Moon size={14} className="text-cyber-blue" />
+            <Moon size={12} className="text-cyber-blue" />
           )}
-          <span className="font-rajdhani text-gray-300">{getTimeString()}</span>
-          <span className="text-[10px] text-gray-600 ml-1">{getDateString()}</span>
+          <span className="text-[11px] font-rajdhani text-gray-300">{getTimeString()}</span>
+          <span className="text-[10px] text-gray-600">{getDateString()}</span>
         </div>
 
-        {/* 通信状态 */}
-        <div className="flex items-center gap-1.5 text-xs px-2 py-1 rounded-lg border border-cyber-green/20 bg-cyber-green/5">
+        {/* 系统状态 */}
+        <div className="flex items-center gap-1.5 px-2 py-1 rounded-lg border border-cyber-green/15 bg-cyber-green/5">
           <div className="w-1.5 h-1.5 rounded-full bg-cyber-green status-dot" />
-          <span className="text-cyber-green font-rajdhani font-medium">LINK ACTIVE</span>
+          <span className="text-[10px] text-cyber-green font-rajdhani font-medium">ONLINE</span>
+        </div>
+
+        {/* 系统资源 */}
+        <div className="flex items-center gap-1.5 px-2 py-1 rounded-lg border border-gray-800/50 bg-space-800/30">
+          <Cpu size={10} className="text-gray-500" />
+          <span className="text-[10px] text-gray-400 font-rajdhani">45%</span>
+          <div className="w-px h-3 bg-gray-700" />
+          <HardDrive size={10} className="text-gray-500" />
+          <span className="text-[10px] text-gray-400 font-rajdhani">62%</span>
         </div>
 
         {/* 系统时间 */}
-        <div className="flex items-center gap-1.5 text-xs px-2 py-1 rounded-lg border border-gray-800 bg-space-800/30">
-          <Clock size={14} className="text-gray-500" />
-          <span className="font-rajdhani text-gray-400 tracking-wider">{currentTime}</span>
+        <div className="flex items-center gap-1.5 px-2 py-1 rounded-lg border border-gray-800/50 bg-space-800/30">
+          <Clock size={12} className="text-gray-500" />
+          <span className="text-[10px] font-rajdhani text-gray-400 tracking-wider">{currentTime}</span>
         </div>
 
         {/* 告警按钮 */}
         <div className="relative">
           <button
             onClick={() => setShowAlerts(!showAlerts)}
-            className={`flex items-center gap-1.5 text-xs px-2.5 py-1.5 rounded-lg border transition-all duration-200 ${
+            className={`flex items-center gap-1.5 text-xs px-2 py-1.5 rounded-lg border transition-all duration-200 ${
               criticalCount > 0
                 ? "border-cyber-red/40 text-cyber-red bg-cyber-red/5 shadow-glow-red"
                 : unacknowledgedCount > 0
@@ -109,30 +122,31 @@ export default function TopBar() {
                 : "border-gray-700 text-gray-400 hover:border-cyber-blue/30 hover:text-cyber-blue"
             }`}
           >
-            <Bell size={14} />
+            <Bell size={12} />
             {unacknowledgedCount > 0 && (
-              <span className="font-rajdhani font-bold">{unacknowledgedCount}</span>
+              <span className="font-rajdhani font-bold text-[10px]">{unacknowledgedCount}</span>
             )}
           </button>
 
           {/* 告警下拉面板 */}
           {showAlerts && (
-            <div className="absolute right-0 top-full mt-2 w-80 bg-space-800/95 backdrop-blur-sm border border-cyber-blue/20 rounded-lg shadow-xl shadow-black/50 z-50 animate-slide-down">
-              <div className="px-3 py-2.5 border-b border-cyber-blue/10 flex items-center justify-between">
+            <div className="absolute right-0 top-full mt-2 w-80 bg-space-900/95 backdrop-blur-md border border-cyber-blue/20 rounded-lg shadow-xl shadow-black/50 z-50 animate-slide-down">
+              <div className="px-3 py-2 border-b border-cyber-blue/10 flex items-center justify-between">
                 <span className="text-xs font-orbitron text-cyber-blue tracking-wider">系统告警</span>
-                <span className="text-[10px] text-gray-500 font-rajdhani">{alerts.length} 条记录</span>
+                <span className="text-[10px] text-gray-500 font-rajdhani">{alerts.length} 条</span>
               </div>
               <div className="max-h-60 overflow-y-auto">
                 {alerts.length === 0 ? (
-                  <div className="px-3 py-4 text-center text-xs text-gray-500">
-                    暂无告警
+                  <div className="px-3 py-6 text-center">
+                    <Bell size={24} className="mx-auto mb-2 text-gray-700" />
+                    <div className="text-xs text-gray-500">暂无告警</div>
                   </div>
                 ) : (
                   alerts.map((alert) => (
                     <div
                       key={alert.id}
-                      className={`px-3 py-2.5 border-b border-gray-800/50 text-xs transition-colors hover:bg-space-700/50 ${
-                        !alert.acknowledged ? "bg-space-700/30" : ""
+                      className={`px-3 py-2.5 border-b border-gray-800/50 text-xs transition-colors hover:bg-space-800/50 ${
+                        !alert.acknowledged ? "bg-space-800/30" : ""
                       }`}
                     >
                       <div className="flex items-center justify-between mb-1">
@@ -150,7 +164,7 @@ export default function TopBar() {
                         </span>
                         <span className="text-gray-600 text-[10px] font-rajdhani">{alert.timestamp}</span>
                       </div>
-                      <p className="text-gray-400">{alert.message}</p>
+                      <p className="text-gray-400 leading-relaxed">{alert.message}</p>
                       {!alert.acknowledged && (
                         <button
                           onClick={() => acknowledgeAlert(alert.id)}
