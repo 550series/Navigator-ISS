@@ -10,10 +10,18 @@
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  
+  /* CSS 变量 */
+  --color-cyber-blue: #00d4ff;
+  --color-cyber-amber: #ff8c00;
+  --color-cyber-red: #ff3b3b;
+  --color-cyber-green: #00ff88;
+  --color-space-900: #0a0e17;
+  --color-space-800: #0c1e3a;
 }
 
 body {
-  background-color: #0a0e17;
+  background-color: var(--color-space-900);
   color: #e2e8f0;
   overflow: hidden;
 }
@@ -25,12 +33,13 @@ body {
 }
 
 ::-webkit-scrollbar-track {
-  background: rgba(0, 212, 255, 0.05);
+  background: rgba(0, 212, 255, 0.03);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(0, 212, 255, 0.3);
+  background: rgba(0, 212, 255, 0.25);
   border-radius: 2px;
+  transition: background 0.2s;
 }
 
 ::-webkit-scrollbar-thumb:hover {
@@ -50,8 +59,8 @@ body {
     0deg,
     transparent,
     transparent 2px,
-    rgba(0, 212, 255, 0.015) 2px,
-    rgba(0, 212, 255, 0.015) 4px
+    rgba(0, 212, 255, 0.012) 2px,
+    rgba(0, 212, 255, 0.012) 4px
   );
   pointer-events: none;
   z-index: 50;
@@ -59,13 +68,14 @@ body {
 
 /* 全息发光边框 */
 .holo-border {
-  border: 1px solid rgba(0, 212, 255, 0.3);
-  box-shadow: 0 0 8px rgba(0, 212, 255, 0.1), inset 0 0 8px rgba(0, 212, 255, 0.05);
+  border: 1px solid rgba(0, 212, 255, 0.25);
+  box-shadow: 0 0 8px rgba(0, 212, 255, 0.08), inset 0 0 8px rgba(0, 212, 255, 0.04);
+  transition: all 0.3s ease;
 }
 
 .holo-border:hover {
-  border-color: rgba(0, 212, 255, 0.6);
-  box-shadow: 0 0 16px rgba(0, 212, 255, 0.2), inset 0 0 16px rgba(0, 212, 255, 0.1);
+  border-color: rgba(0, 212, 255, 0.5);
+  box-shadow: 0 0 16px rgba(0, 212, 255, 0.15), inset 0 0 12px rgba(0, 212, 255, 0.08);
 }
 
 /* 告警脉冲 */
@@ -78,7 +88,7 @@ body {
     box-shadow: 0 0 4px rgba(255, 59, 59, 0.3);
   }
   50% {
-    box-shadow: 0 0 16px rgba(255, 59, 59, 0.6);
+    box-shadow: 0 0 20px rgba(255, 59, 59, 0.5);
   }
 }
 
@@ -87,7 +97,7 @@ body {
   background: linear-gradient(
     90deg,
     transparent 0%,
-    rgba(0, 212, 255, 0.05) 50%,
+    rgba(0, 212, 255, 0.04) 50%,
     transparent 100%
   );
   background-size: 200% 100%;
@@ -102,24 +112,24 @@ body {
 /* 网格背景 */
 .grid-bg {
   background-image:
-    linear-gradient(rgba(0, 212, 255, 0.03) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(0, 212, 255, 0.03) 1px, transparent 1px);
+    linear-gradient(rgba(0, 212, 255, 0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 212, 255, 0.02) 1px, transparent 1px);
   background-size: 40px 40px;
 }
 
 /* 星点背景 */
 .stars-bg {
   background-image:
-    radial-gradient(1px 1px at 10% 20%, rgba(255, 255, 255, 0.4), transparent),
-    radial-gradient(1px 1px at 30% 60%, rgba(255, 255, 255, 0.3), transparent),
-    radial-gradient(1px 1px at 50% 10%, rgba(255, 255, 255, 0.2), transparent),
-    radial-gradient(1px 1px at 70% 80%, rgba(255, 255, 255, 0.3), transparent),
-    radial-gradient(1px 1px at 90% 40%, rgba(255, 255, 255, 0.4), transparent),
-    radial-gradient(1.5px 1.5px at 15% 85%, rgba(0, 212, 255, 0.3), transparent),
-    radial-gradient(1.5px 1.5px at 85% 15%, rgba(0, 212, 255, 0.2), transparent),
-    radial-gradient(1px 1px at 45% 45%, rgba(255, 255, 255, 0.2), transparent),
-    radial-gradient(1px 1px at 65% 25%, rgba(255, 255, 255, 0.3), transparent),
-    radial-gradient(1px 1px at 25% 75%, rgba(255, 255, 255, 0.2), transparent);
+    radial-gradient(1px 1px at 10% 20%, rgba(255, 255, 255, 0.3), transparent),
+    radial-gradient(1px 1px at 30% 60%, rgba(255, 255, 255, 0.2), transparent),
+    radial-gradient(1px 1px at 50% 10%, rgba(255, 255, 255, 0.15), transparent),
+    radial-gradient(1px 1px at 70% 80%, rgba(255, 255, 255, 0.2), transparent),
+    radial-gradient(1px 1px at 90% 40%, rgba(255, 255, 255, 0.3), transparent),
+    radial-gradient(1.5px 1.5px at 15% 85%, rgba(0, 212, 255, 0.25), transparent),
+    radial-gradient(1.5px 1.5px at 85% 15%, rgba(0, 212, 255, 0.15), transparent),
+    radial-gradient(1px 1px at 45% 45%, rgba(255, 255, 255, 0.15), transparent),
+    radial-gradient(1px 1px at 65% 25%, rgba(255, 255, 255, 0.2), transparent),
+    radial-gradient(1px 1px at 25% 75%, rgba(255, 255, 255, 0.15), transparent);
 }
 
 /* 环形进度条 */
@@ -133,7 +143,7 @@ body {
 }
 
 @keyframes value-flash {
-  0% { color: #00d4ff; text-shadow: 0 0 10px rgba(0, 212, 255, 0.8); }
+  0% { color: var(--color-cyber-blue); text-shadow: 0 0 10px rgba(0, 212, 255, 0.8); }
   100% { color: inherit; text-shadow: none; }
 }
 
@@ -152,4 +162,150 @@ body {
     opacity: 1;
     transform: translateY(0);
   }
+}
+
+/* 渐变边框效果 */
+.gradient-border {
+  position: relative;
+}
+
+.gradient-border::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(135deg, rgba(0, 212, 255, 0.3), rgba(0, 212, 255, 0.05));
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+/* 光晕效果 */
+.glow-effect {
+  position: relative;
+}
+
+.glow-effect::after {
+  content: "";
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  background: radial-gradient(circle at center, rgba(0, 212, 255, 0.1) 0%, transparent 70%);
+  border-radius: inherit;
+  z-index: -1;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.glow-effect:hover::after {
+  opacity: 1;
+}
+
+/* 科幻按钮样式 */
+.cyber-btn {
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.cyber-btn::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(0, 212, 255, 0.1), transparent);
+  transition: left 0.5s;
+}
+
+.cyber-btn:hover::before {
+  left: 100%;
+}
+
+/* 状态指示灯 */
+.status-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  position: relative;
+}
+
+.status-dot::after {
+  content: "";
+  position: absolute;
+  inset: -2px;
+  border-radius: 50%;
+  background: inherit;
+  opacity: 0.3;
+  animation: status-pulse 2s ease-in-out infinite;
+}
+
+@keyframes status-pulse {
+  0%, 100% { transform: scale(1); opacity: 0.3; }
+  50% { transform: scale(1.5); opacity: 0; }
+}
+
+/* 文字渐变效果 */
+.text-gradient {
+  background: linear-gradient(135deg, var(--color-cyber-blue), var(--color-cyber-green));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* 加载骨架屏 */
+.skeleton {
+  background: linear-gradient(90deg, rgba(0, 212, 255, 0.05) 25%, rgba(0, 212, 255, 0.1) 50%, rgba(0, 212, 255, 0.05) 75%);
+  background-size: 200% 100%;
+  animation: skeleton-loading 1.5s infinite;
+}
+
+@keyframes skeleton-loading {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* 分割线发光效果 */
+.divider-glow {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(0, 212, 255, 0.3), transparent);
+}
+
+/* 输入框聚焦效果 */
+input:focus, select:focus, textarea:focus {
+  outline: none;
+  border-color: rgba(0, 212, 255, 0.5);
+  box-shadow: 0 0 0 2px rgba(0, 212, 255, 0.1);
+}
+
+/* 工具提示样式 */
+.tooltip {
+  position: relative;
+}
+
+.tooltip::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 4px 8px;
+  background: var(--color-space-800);
+  border: 1px solid rgba(0, 212, 255, 0.3);
+  border-radius: 4px;
+  font-size: 10px;
+  color: #e2e8f0;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s;
+}
+
+.tooltip:hover::after {
+  opacity: 1;
 }

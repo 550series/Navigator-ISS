@@ -10,35 +10,59 @@ interface StatusCardProps {
   className?: string;
 }
 
-/** 状态卡片组件 - 用于展示关键指标 */
 export default function StatusCard({ title, value, unit, icon, status = "normal", children, className = "" }: StatusCardProps) {
-  const borderColor =
-    status === "critical"
-      ? "border-cyber-red/40"
-      : status === "warning"
-      ? "border-cyber-amber/40"
-      : "border-cyber-blue/20";
+  const statusStyles = {
+    critical: {
+      border: "border-cyber-red/40",
+      glow: "shadow-glow-red",
+      iconBg: "bg-cyber-red/10",
+      iconColor: "text-cyber-red",
+    },
+    warning: {
+      border: "border-cyber-amber/40",
+      glow: "shadow-glow-amber",
+      iconBg: "bg-cyber-amber/10",
+      iconColor: "text-cyber-amber",
+    },
+    normal: {
+      border: "border-cyber-blue/20",
+      glow: "shadow-glow-sm",
+      iconBg: "bg-cyber-blue/10",
+      iconColor: "text-cyber-blue",
+    },
+  };
 
-  const glowColor =
-    status === "critical"
-      ? "shadow-[0_0_12px_rgba(255,59,59,0.15)]"
-      : status === "warning"
-      ? "shadow-[0_0_12px_rgba(255,140,0,0.15)]"
-      : "shadow-[0_0_8px_rgba(0,212,255,0.08)]";
+  const styles = statusStyles[status];
 
   return (
     <div
-      className={`bg-space-800/60 backdrop-blur-sm rounded border ${borderColor} ${glowColor} p-4 transition-all duration-300 hover:border-cyber-blue/40 ${className}`}
+      className={`bg-space-800/60 backdrop-blur-sm rounded-lg border ${styles.border} ${styles.glow} p-4 transition-all duration-300 hover:border-cyber-blue/40 hover:shadow-glow-md group ${className}`}
     >
-      <div className="flex items-center justify-between mb-2">
-        <span className="text-xs text-gray-400 font-rajdhani uppercase tracking-wider">{title}</span>
-        {icon && <span className="text-gray-500">{icon}</span>}
+      <div className="flex items-center justify-between mb-3">
+        <span className="text-xs text-gray-400 font-rajdhani uppercase tracking-wider">
+          {title}
+        </span>
+        {icon && (
+          <span className={`p-1.5 rounded ${styles.iconBg} ${styles.iconColor} transition-colors group-hover:bg-cyber-blue/20`}>
+            {icon}
+          </span>
+        )}
       </div>
-      <div className="flex items-baseline gap-1">
-        <span className="text-2xl font-orbitron font-bold text-white">{value}</span>
-        {unit && <span className="text-xs text-gray-500 font-rajdhani">{unit}</span>}
+      <div className="flex items-baseline gap-1.5">
+        <span className="text-2xl font-orbitron font-bold text-white tracking-tight">
+          {value}
+        </span>
+        {unit && (
+          <span className="text-xs text-gray-500 font-rajdhani font-medium">
+            {unit}
+          </span>
+        )}
       </div>
-      {children}
+      {children && (
+        <div className="mt-3 pt-3 border-t border-cyber-blue/10">
+          {children}
+        </div>
+      )}
     </div>
   );
 }

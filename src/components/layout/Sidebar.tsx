@@ -36,7 +36,6 @@ const navItems = [
   { path: "/settings", label: "系统设置", icon: Settings },
 ];
 
-/** 侧边导航栏组件 */
 export default function Sidebar() {
   const [collapsed, setCollapsed] = useState(false);
   const [showEvents, setShowEvents] = useState(false);
@@ -49,8 +48,8 @@ export default function Sidebar() {
       }`}
     >
       {/* Logo 区域 */}
-      <div className="flex items-center gap-2 px-4 h-14 border-b border-cyber-blue/20">
-        <div className="w-8 h-8 rounded border border-cyber-blue/40 flex items-center justify-center text-cyber-blue font-orbitron text-xs font-bold bg-cyber-blue/5">
+      <div className="flex items-center gap-2 px-4 h-14 border-b border-cyber-blue/20 bg-gradient-to-r from-space-800/40 to-transparent">
+        <div className="w-8 h-8 rounded-lg border border-cyber-blue/40 flex items-center justify-center text-cyber-blue font-orbitron text-xs font-bold bg-cyber-blue/5 shadow-glow-sm">
           N
         </div>
         {!collapsed && (
@@ -62,21 +61,33 @@ export default function Sidebar() {
       </div>
 
       {/* 导航项 */}
-      <nav className="flex-1 py-4 space-y-1 px-2">
+      <nav className="flex-1 py-4 space-y-1 px-2 overflow-y-auto">
         {navItems.map(({ path, label, icon: Icon }) => {
           const isActive = location.pathname === path;
           return (
             <NavLink
               key={path}
               to={path}
-              className={`flex items-center gap-3 px-3 py-2.5 rounded text-sm transition-all duration-200 group ${
+              className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-all duration-200 group relative ${
                 isActive
-                  ? "bg-cyber-blue/10 text-cyber-blue border border-cyber-blue/30"
+                  ? "bg-cyber-blue/10 text-cyber-blue border border-cyber-blue/30 shadow-glow-sm"
                   : "text-gray-400 hover:text-cyber-blue hover:bg-cyber-blue/5 border border-transparent"
               }`}
             >
-              <Icon size={18} className={isActive ? "text-cyber-blue" : "text-gray-500 group-hover:text-cyber-blue"} />
-              {!collapsed && <span className="font-rajdhani font-medium">{label}</span>}
+              {isActive && (
+                <div className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-4 bg-cyber-blue rounded-r-full" />
+              )}
+              <Icon
+                size={18}
+                className={`flex-shrink-0 transition-colors ${
+                  isActive
+                    ? "text-cyber-blue"
+                    : "text-gray-500 group-hover:text-cyber-blue"
+                }`}
+              />
+              {!collapsed && (
+                <span className="font-rajdhani font-medium">{label}</span>
+              )}
             </NavLink>
           );
         })}
@@ -88,17 +99,17 @@ export default function Sidebar() {
         className={`flex items-center gap-3 h-10 border-t border-cyber-blue/20 transition-colors px-3 ${
           showEvents
             ? "bg-cyber-amber/10 text-cyber-amber"
-            : "text-gray-500 hover:text-cyber-amber"
+            : "text-gray-500 hover:text-cyber-amber hover:bg-cyber-amber/5"
         }`}
       >
         <Atom size={16} className="flex-shrink-0" />
-        {!collapsed && <span className="text-xs font-rajdhani">事件模拟器</span>}
+        {!collapsed && <span className="text-xs font-rajdhani font-medium">事件模拟器</span>}
       </button>
 
       {/* 折叠按钮 */}
       <button
         onClick={() => setCollapsed(!collapsed)}
-        className="flex items-center justify-center h-10 border-t border-cyber-blue/20 text-gray-500 hover:text-cyber-blue transition-colors"
+        className="flex items-center justify-center h-10 border-t border-cyber-blue/20 text-gray-500 hover:text-cyber-blue hover:bg-cyber-blue/5 transition-colors"
       >
         {collapsed ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
       </button>
