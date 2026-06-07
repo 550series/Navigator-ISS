@@ -1,12 +1,6 @@
 import { useState, useCallback, useMemo } from "react";
 
-interface FilterConfig<T> {
-  key: keyof T;
-  label: string;
-  options: { value: string; label: string }[];
-}
-
-export function useFilter<T>(items: T[], _configs: FilterConfig<T>[]) {
+export function useFilter<T>(items: T[]) {
   const [filters, setFilters] = useState<Record<string, string>>({});
 
   const handleFilterChange = useCallback((key: string, value: string) => {
