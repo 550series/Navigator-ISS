@@ -54,7 +54,7 @@ export default function EventSimulator({ onClose }: { onClose: () => void }) {
   };
 
   return (
-    <div className="fixed left-16 top-0 h-full w-80 bg-space-900/98 backdrop-blur-md border-r border-cyber-blue/30 shadow-2xl shadow-black z-50 flex flex-col">
+    <div className="fixed left-16 top-0 h-full w-80 bg-space-900 border-r border-cyber-blue/30 shadow-2xl shadow-black z-50 flex flex-col">
       {/* 头部 */}
       <div className="h-12 border-b border-cyber-blue/20 flex items-center justify-between px-4 flex-shrink-0">
         <div className="flex items-center gap-2">
