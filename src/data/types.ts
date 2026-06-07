@@ -86,6 +86,87 @@ export interface NavigationData {
   waypoints: { name: string; distance: number; completed: boolean }[];
 }
 
+/** 航线规划 */
+export interface RoutePlan {
+  id: string;
+  name: string;
+  origin: string;
+  destination: string;
+  distance: number;
+  estimatedTime: number;
+  fuelRequired: number;
+  riskLevel: "low" | "medium" | "high" | "critical";
+  waypoints: RouteWaypoint[];
+  status: "draft" | "approved" | "active" | "completed";
+  createdAt: string;
+}
+
+/** 航线航点 */
+export interface RouteWaypoint {
+  id: string;
+  name: string;
+  coordinates: { x: number; y: number; z: number };
+  arrivalTime: string;
+  distanceFromPrev: number;
+  fuelConsumption: number;
+  hazards: string[];
+}
+
+/** 燃料计算 */
+export interface FuelCalculation {
+  currentFuel: number;
+  fuelCapacity: number;
+  consumptionRate: number;
+  projectedConsumption: number;
+  reserveFuel: number;
+  efficiency: number;
+  gravityAssists: GravityAssist[];
+}
+
+/** 引力辅助 */
+export interface GravityAssist {
+  id: string;
+  planetName: string;
+  approachDate: string;
+  deltaV: number;
+  fuelSaved: number;
+  riskFactor: number;
+}
+
+/** 轨道参数 */
+export interface OrbitalParameters {
+  semiMajorAxis: number;
+  eccentricity: number;
+  inclination: number;
+  argumentOfPeriapsis: number;
+  longitudeOfAscendingNode: number;
+  trueAnomaly: number;
+  period: number;
+  apoapsis: number;
+  periapsis: number;
+}
+
+/** 航线风险评估 */
+export interface RouteRiskAssessment {
+  id: string;
+  routeId: string;
+  overallRisk: "low" | "medium" | "high" | "critical";
+  hazards: RouteHazard[];
+  mitigationStrategies: string[];
+  assessmentDate: string;
+}
+
+/** 航线风险点 */
+export interface RouteHazard {
+  id: string;
+  type: "asteroid_field" | "radiation_zone" | "gravity_well" | "debris_field" | "solar_activity";
+  name: string;
+  location: number;
+  severity: "low" | "medium" | "high";
+  description: string;
+  avoidance建议: string;
+}
+
 /** 天文数据 */
 export interface AstronomicalData {
   stellarPosition: { ra: number; dec: number };
