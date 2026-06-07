@@ -1,3 +1,5 @@
+import { memo } from "react";
+
 interface ProgressBarProps {
   value: number;
   max: number;
@@ -7,7 +9,7 @@ interface ProgressBarProps {
   height?: number;
 }
 
-export default function ProgressBar({ value, max, label, showPercent = true, color, height = 6 }: ProgressBarProps) {
+const ProgressBar = memo(function ProgressBar({ value, max, label, showPercent = true, color, height = 6 }: ProgressBarProps) {
   const percent = Math.min((value / max) * 100, 100);
 
   const getBarStyle = () => {
@@ -58,4 +60,6 @@ export default function ProgressBar({ value, max, label, showPercent = true, col
       </div>
     </div>
   );
-}
+});
+
+export default ProgressBar;

@@ -1,3 +1,5 @@
+import { memo } from "react";
+
 interface GaugeChartProps {
   value: number;
   max: number;
@@ -7,8 +9,7 @@ interface GaugeChartProps {
   color?: string;
 }
 
-/** 环形仪表盘组件 */
-export default function GaugeChart({ value, max, label, unit, size = 120, color = "#00d4ff" }: GaugeChartProps) {
+const GaugeChart = memo(function GaugeChart({ value, max, label, unit, size = 120, color = "#00d4ff" }: GaugeChartProps) {
   const percentage = Math.min((value / max) * 100, 100);
   const strokeWidth = 8;
   const radius = (size - strokeWidth) / 2;
@@ -21,7 +22,6 @@ export default function GaugeChart({ value, max, label, unit, size = 120, color 
   return (
     <div className="flex flex-col items-center">
       <svg width={size} height={size} className="-rotate-90">
-        {/* 背景环 */}
         <circle
           cx={size / 2}
           cy={size / 2}
@@ -30,7 +30,6 @@ export default function GaugeChart({ value, max, label, unit, size = 120, color 
           stroke="rgba(0,212,255,0.1)"
           strokeWidth={strokeWidth}
         />
-        {/* 进度环 */}
         <circle
           cx={size / 2}
           cy={size / 2}
@@ -52,4 +51,6 @@ export default function GaugeChart({ value, max, label, unit, size = 120, color 
       <span className="mt-1 text-xs text-gray-400 font-rajdhani">{label}</span>
     </div>
   );
-}
+});
+
+export default GaugeChart;

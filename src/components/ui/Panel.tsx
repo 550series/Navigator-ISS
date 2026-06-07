@@ -1,4 +1,4 @@
-import { type ReactNode } from "react";
+import { memo, type ReactNode } from "react";
 
 interface PanelProps {
   title: string;
@@ -9,7 +9,7 @@ interface PanelProps {
   action?: ReactNode;
 }
 
-export default function Panel({ title, icon, children, className = "", alert = false, action }: PanelProps) {
+const Panel = memo(function Panel({ title, icon, children, className = "", alert = false, action }: PanelProps) {
   return (
     <div
       className={`bg-space-800/40 backdrop-blur-sm rounded-lg border overflow-hidden transition-all duration-300 ${
@@ -32,4 +32,6 @@ export default function Panel({ title, icon, children, className = "", alert = f
       <div className="p-4">{children}</div>
     </div>
   );
-}
+});
+
+export default Panel;

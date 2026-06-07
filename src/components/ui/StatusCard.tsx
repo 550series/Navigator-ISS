@@ -1,4 +1,4 @@
-import { type ReactNode } from "react";
+import { memo, type ReactNode } from "react";
 
 interface StatusCardProps {
   title: string;
@@ -10,7 +10,7 @@ interface StatusCardProps {
   className?: string;
 }
 
-export default function StatusCard({ title, value, unit, icon, status = "normal", children, className = "" }: StatusCardProps) {
+const StatusCard = memo(function StatusCard({ title, value, unit, icon, status = "normal", children, className = "" }: StatusCardProps) {
   const statusStyles = {
     critical: {
       border: "border-cyber-red/40",
@@ -65,4 +65,6 @@ export default function StatusCard({ title, value, unit, icon, status = "normal"
       )}
     </div>
   );
-}
+});
+
+export default StatusCard;
