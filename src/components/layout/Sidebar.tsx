@@ -11,13 +11,9 @@ import {
   Atom,
   ChevronLeft,
   ChevronRight,
-  Bell,
-  Wrench,
-  FlaskConical,
   ShieldAlert,
   FileText,
   Globe,
-  UserCog,
 } from "lucide-react";
 import { useState } from "react";
 import { useSidebarStore } from "@/stores/sidebarStore";
@@ -30,13 +26,9 @@ const navItems = [
   { path: "/navigation", label: "航线导航", icon: Navigation },
   { path: "/communication", label: "通信系统", icon: Radio },
   { path: "/missions", label: "任务管理", icon: ClipboardList },
-  { path: "/crew", label: "船员花名册", icon: Users },
-  { path: "/crew-management", label: "船员管理", icon: UserCog },
-  { path: "/space-environment", label: "太空环境", icon: Globe },
-  { path: "/alerts", label: "告警中心", icon: Bell },
-  { path: "/maintenance", label: "维修日志", icon: Wrench },
-  { path: "/experiments", label: "实验管理", icon: FlaskConical },
-  { path: "/emergency", label: "应急响应", icon: ShieldAlert },
+  { path: "/crew-system", label: "船员系统", icon: Users },
+  { path: "/operations", label: "运维中心", icon: ShieldAlert },
+  { path: "/research", label: "科研中心", icon: Globe },
   { path: "/logs", label: "操作日志", icon: FileText },
   { path: "/settings", label: "系统设置", icon: Settings },
 ];
@@ -68,7 +60,7 @@ export default function Sidebar() {
       {/* 导航项 */}
       <nav className="flex-1 py-4 space-y-1 px-2 overflow-y-auto">
         {navItems.map(({ path, label, icon: Icon }) => {
-          const isActive = location.pathname === path;
+          const isActive = location.pathname === path || location.pathname.startsWith(path + "/");
           return (
             <NavLink
               key={path}
