@@ -52,7 +52,7 @@ export default function Layout() {
           {/* 底部状态栏 */}
           <footer className="h-6 border-t border-cyber-blue/10 bg-space-900/60 backdrop-blur-sm flex items-center justify-between px-4 text-[10px] font-rajdhani">
             <div className="flex items-center gap-4">
-              <span className="text-gray-600">NAVIGATOR ISS v3.0.0</span>
+              <span className="text-gray-600">NAVIGATOR ISS v{__APP_VERSION__}</span>
               <span className="text-gray-700">|</span>
               <span className="text-gray-600">仿真引擎运行中</span>
             </div>
