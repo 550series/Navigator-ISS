@@ -28,7 +28,7 @@
 - **图表**：Recharts
 - **动画**：Framer Motion
 - **图标**：Lucide React
-- **PWA**：`vite-plugin-pwa` + `public/manifest.webmanifest`，支持可安装、离线壳的应用形态
+- **PWA**：`vite-plugin-pwa`（`autoUpdate` + Workbox 运行时缓存），支持可安装、离线回退的应用形态
 - **测试**：Vitest + Testing Library + jsdom
 - **部署**：Cloudflare Pages（见 `wrangler.toml` 与 `public/_redirects`）
 
@@ -96,6 +96,44 @@ src/
 ### 其他静态托管
 
 构建产物为 `dist/` 目录，可直接部署到任何静态文件服务器。SPA 路由需配置所有路径回退到 `index.html`。
+
+## PWA
+
+本项目已通过 `vite-plugin-pwa` 启用渐进式 Web 应用能力，构建时自动生成 Service Worker 与 `manifest.webmanifest`。
+
+### 能力
+
+- **可安装**：在桌面/移动浏览器中可通过「安装」将应用添加到主屏幕，以独立窗口运行
+- **自动更新**：`registerType: 'autoUpdate'`，新版本发布后自动在后台拉取并激活
+- **离线可用**：Workbox 预缓存应用壳（JS/CSS/HTML/图标/字体），断网时回退到 `public/offline.html`
+- **运行时缓存**：Google Fonts（`googleapis.com` / `gstatic.com`）采用 `CacheFirst` 策略，长期复用
+- **图标完整**：提供 192/512 PNG（`any` + `maskable` 双变体）与 180×180 `apple-touch-icon.png`，兼容 iOS Safari
+
+### 安装方式
+
+- **桌面 Chrome/Edge**：地址栏右侧「安装」图标 → 安装
+- **Android Chrome**：菜单 → 「添加到主屏幕」
+- **iOS Safari**：分享 → 「添加到主屏幕」（使用 `apple-touch-icon.png` 作为图标）
+
+### 图标资源
+
+图标源文件为 `public/pwa-512x512.svg`，PNG 资源由 `sharp` 从 SVG 生成。如需重新生成（修改源 SVG 后）：
+
+```bash
+npm run generate-pwa-assets
+```
+
+生成产物：
+
+| 文件 | 用途 |
+|------|------|
+| `pwa-192x192.png` / `pwa-512x512.png` | manifest `purpose: any` |
+| `pwa-192x192-maskable.png` / `pwa-512x512-maskable.png` | manifest `purpose: maskable`（带安全区内边距） |
+| `apple-touch-icon.png` | iOS Safari 主屏图标 |
+
+### 开发调试
+
+开发模式下 PWA 同样启用（`devOptions.enabled: true`），可在 `npm run dev` 中通过 DevTools → Application → Service Workers 验证。生产构建后使用 `npm run preview` 检查最终 SW 行为。
 
 ## 设计说明
 

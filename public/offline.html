@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#0a0e17" />
+    <title>离线模式 | Navigator ISS</title>
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { height: 100%; }
+      body {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #0a0e17;
+        color: #00d4ff;
+        font-family: 'Rajdhani', 'Segoe UI', sans-serif;
+        overflow: hidden;
+      }
+      .offline-card {
+        text-align: center;
+        padding: 3rem 2.5rem;
+        border: 1px solid rgba(0, 212, 255, 0.3);
+        border-radius: 12px;
+        background: rgba(12, 30, 58, 0.4);
+        backdrop-filter: blur(8px);
+        max-width: 480px;
+        position: relative;
+      }
+      .offline-card::before {
+        content: '';
+        position: absolute;
+        inset: -1px;
+        border-radius: 12px;
+        padding: 1px;
+        background: linear-gradient(135deg, rgba(0, 212, 255, 0.5), transparent 50%, rgba(255, 140, 0, 0.3));
+        -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+        -webkit-mask-composite: xor;
+        mask-composite: exclude;
+        pointer-events: none;
+      }
+      .icon {
+        width: 72px;
+        height: 72px;
+        margin: 0 auto 1.25rem;
+        opacity: 0.85;
+      }
+      h1 {
+        font-size: 1.5rem;
+        font-weight: 600;
+        letter-spacing: 0.05em;
+        margin-bottom: 0.75rem;
+        color: #e6f4ff;
+      }
+      p {
+        font-size: 1rem;
+        line-height: 1.6;
+        color: rgba(230, 244, 255, 0.65);
+        margin-bottom: 1.5rem;
+      }
+      button {
+        display: inline-block;
+        padding: 0.6rem 2rem;
+        font-size: 0.95rem;
+        font-family: inherit;
+        font-weight: 600;
+        letter-spacing: 0.05em;
+        color: #0a0e17;
+        background: #00d4ff;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+      button:hover { background: #33ddff; box-shadow: 0 0 16px rgba(0, 212, 255, 0.5); }
+      .status {
+        margin-top: 1.5rem;
+        font-size: 0.8rem;
+        color: rgba(255, 140, 0, 0.7);
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+      }
+      .blink { animation: blink 1.5s ease-in-out infinite; }
+      @keyframes blink { 0%, 100% { opacity: 0.4; } 50% { opacity: 1; } }
+      @media (prefers-reduced-motion: reduce) { .blink { animation: none; opacity: 0.7; } }
+    </style>
+  </head>
+  <body>
+    <div class="offline-card">
+      <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="#00d4ff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M12 2 L13.5 8.5 L20 9 L15 13.5 L16.5 20 L12 16.5 L7.5 20 L9 13.5 L4 9 L10.5 8.5 Z" opacity="0.3"/>
+        <line x1="3" y1="21" x2="21" y2="3"/>
+        <path d="M8.5 8.5 a7 7 0 0 1 9 9"/>
+        <path d="M5 5 a11 11 0 0 1 14 14"/>
+      </svg>
+      <h1>信号丢失 — 离线模式</h1>
+      <p>领航员空间站管理系统当前无法连接网络。已缓存的内容仍可使用，部分实时数据可能在连接恢复后刷新。</p>
+      <button onclick="location.reload()">重新连接</button>
+      <div class="status blink">// SYSTEM STATUS: OFFLINE</div>
+    </div>
+  </body>
+</html>
