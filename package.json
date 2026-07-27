@@ -12,7 +12,8 @@
     "test": "vitest",
     "test:ui": "vitest --ui",
     "test:coverage": "vitest --coverage",
-    "test:run": "vitest run"
+    "test:run": "vitest run",
+    "generate-pwa-assets": "node scripts/generate-pwa-icons.mjs"
   },
   "dependencies": {
     "clsx": "^2.1.1",
@@ -42,6 +43,7 @@
     "globals": "^16.0.0",
     "jsdom": "^29.1.1",
     "postcss": "^8.5.3",
+    "sharp": "^0.35.3",
     "tailwindcss": "^3.4.17",
     "typescript": "~5.8.3",
     "typescript-eslint": "^8.30.1",
